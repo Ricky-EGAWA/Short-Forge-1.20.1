@@ -1,10 +1,9 @@
-package net.kaupenjoe.tutorialmod;
+package com.ricky.totem;
 
 import com.mojang.logging.LogUtils;
-import net.kaupenjoe.tutorialmod.block.ModBlocks;
-import net.kaupenjoe.tutorialmod.item.ModCreativeModTabs;
-import net.kaupenjoe.tutorialmod.item.ModItems;
-import net.minecraft.world.item.CreativeModeTabs;
+import com.ricky.totem.item.ModCreativeModTabs;
+import com.ricky.totem.item.ModItems;
+import com.ricky.totem.item.totem.TotemEffectHandler;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
@@ -18,18 +17,19 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.slf4j.Logger;
 
 // The value here should match an entry in the META-INF/mods.toml file
-@Mod(TutorialMod.MOD_ID)
-public class TutorialMod {
-    public static final String MOD_ID = "tutorialmod";
+@Mod(TotemItemsMod.MOD_ID)
+public class TotemItemsMod {
+    public static final String MOD_ID = "totem";
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    public TutorialMod() {
+    public TotemItemsMod() {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
+
+        MinecraftForge.EVENT_BUS.register(new TotemEffectHandler());
 
         ModCreativeModTabs.register(modEventBus);
 
         ModItems.register(modEventBus);
-        ModBlocks.register(modEventBus);
 
         modEventBus.addListener(this::commonSetup);
 
@@ -42,10 +42,6 @@ public class TutorialMod {
     }
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
-        if(event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
-            event.accept(ModItems.SAPPHIRE);
-            event.accept(ModItems.RAW_SAPPHIRE);
-        }
     }
 
     // You can use SubscribeEvent and let the Event Bus discover methods to call
