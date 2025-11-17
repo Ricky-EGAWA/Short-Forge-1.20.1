@@ -4,7 +4,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.ricky.totem.TotemItemsMod;
 import com.ricky.totem.client.renderer.StoneMapRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderItemInFrameEvent;
@@ -16,8 +15,7 @@ public class ClientEvents {
 
     @SubscribeEvent
     public static void onRenderItemInFrame(RenderItemInFrameEvent event) {
-        ItemFrame itemFrame = event.getItemFrame();
-        ItemStack stack = itemFrame.getItem();
+        ItemStack stack = event.getItemStack();
 
         // 石テクスチャの地図かチェック
         if (stack.hasTag() && stack.getTag().getBoolean("StoneTextured")) {
