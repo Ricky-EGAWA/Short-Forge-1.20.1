@@ -16,10 +16,20 @@ public class StoneTexturedMapItem extends MapItem {
     }
 
     @Override
+    public ItemStack getDefaultInstance() {
+        ItemStack stack = super.getDefaultInstance();
+        stack.getOrCreateTag().putBoolean("StoneTextured", true);
+        return stack;
+    }
+
+    @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack itemStack = player.getItemInHand(hand);
 
         if (!level.isClientSide) {
+            // StoneTexturedタグを確実に設定
+            itemStack.getOrCreateTag().putBoolean("StoneTextured", true);
+
             // 地図IDがない場合は作成
             if (!itemStack.hasTag() || !itemStack.getTag().contains("map")) {
                 createMapData(itemStack, level);
@@ -58,8 +68,9 @@ public class StoneTexturedMapItem extends MapItem {
             // 地図データを保存
             serverLevel.setMapData(mapName, data);
 
-            // アイテムに地図IDを設定
+            // アイテムに地図IDを設定し、カスタムマーカーを追加
             stack.getOrCreateTag().putInt("map", mapId);
+            stack.getOrCreateTag().putBoolean("StoneTextured", true);
         }
     }
 
