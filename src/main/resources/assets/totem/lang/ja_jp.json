@@ -4,5 +4,10 @@
   "item.totem.totem_sword": "ダイヤモンドの剣",
   "item.totem.totem_pickaxe": "ダイヤモンドのツルハシ",
 
-  "creativetab.tutorial_tab": "トーテム"
+  "item.totem.water_bucket": "水入りバケツ",
+  "item.totem.lava_bucket": "溶岩入りバケツ",
+  "block.totem.obsidian": "黒曜石",
+
+  "creativetab.totem_tab": "トーテム",
+    "creativetab.edible_tab": "変な食べ物"
 }

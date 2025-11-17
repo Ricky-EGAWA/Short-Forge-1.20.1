@@ -35,6 +35,11 @@ public class ModItems {
             () -> new PickaxeItem(Tiers.DIAMOND, 1, -2.8F,
                     new Item.Properties().stacksTo(1)));
 
+    public static final RegistryObject<Item> WATER_BUCKET = ITEMS.register("water_bucket",
+            () -> new EdibleBucketItem(new Item.Properties().food(ModFoodProperties.WATER_BUCKET)));
+    public static final RegistryObject<Item> LAVA_BUCKET = ITEMS.register("lava_bucket",
+            () -> new EdibleBucketItem(new Item.Properties().food(ModFoodProperties.LAVA_BUCKET)));
+
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);
     }

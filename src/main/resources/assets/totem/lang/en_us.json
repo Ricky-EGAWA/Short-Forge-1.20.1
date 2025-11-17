@@ -4,5 +4,10 @@
   "item.totem.totem_sword": "Diamond Sword",
   "item.totem.totem_pickaxe": "Diamond Pickaxe",
 
-  "creativetab.tutorial_tab": "Totem"
+  "item.totem.water_bucket": "Water Bucket",
+  "item.totem.lava_bucket": "Lava Bucket",
+  "block.totem.obsidian": "Obsidian",
+
+  "creativetab.totem_tab": "Totem",
+  "creativetab.edible_tab": "Edible Items"
 }

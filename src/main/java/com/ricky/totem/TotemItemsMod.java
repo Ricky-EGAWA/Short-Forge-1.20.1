@@ -1,6 +1,7 @@
 package com.ricky.totem;
 
 import com.mojang.logging.LogUtils;
+import com.ricky.totem.block.ModBlocks;
 import com.ricky.totem.item.ModCreativeModTabs;
 import com.ricky.totem.item.ModItems;
 import com.ricky.totem.item.totem.TotemEffectHandler;
@@ -30,6 +31,7 @@ public class TotemItemsMod {
         ModCreativeModTabs.register(modEventBus);
 
         ModItems.register(modEventBus);
+        ModBlocks.register(modEventBus);
 
         modEventBus.addListener(this::commonSetup);
 
