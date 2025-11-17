@@ -41,7 +41,7 @@ public class ModItems {
             () -> new EdibleBucketItem(new Item.Properties().food(ModFoodProperties.LAVA_BUCKET)));
 
     public static final RegistryObject<Item> STONE_TEXTURED_MAP = ITEMS.register("stone_textured_map",
-            () -> new Item(new Item.Properties().stacksTo(64)));
+            () -> new StoneTexturedMapItem(new Item.Properties().stacksTo(64)));
 
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);
