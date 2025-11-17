@@ -33,6 +33,17 @@ public class ModCreativeModTabs {
                         pOutput.accept(ModItems.WATER_BUCKET.get());
                         pOutput.accept(ModItems.LAVA_BUCKET.get());
                         pOutput.accept(ModBlocks.OBSIDIAN.get());
+                        pOutput.accept(ModItems.STONE_TEXTURED_MAP.get());
+                        pOutput.accept(ModItems.NETHERRACK_TEXTURED_MAP.get());
+                    })
+                    .build());
+
+    public static final RegistryObject<CreativeModeTab> MAP_TAB = CREATIVE_MODE_TABS.register("map_tab",
+            () -> CreativeModeTab.builder().icon(() -> new ItemStack(Items.MAP))
+                    .title(Component.translatable("creativetab.map_tab"))
+                    .displayItems((pParameters, pOutput) -> {
+                        pOutput.accept(ModItems.STONE_TEXTURED_MAP.get());
+                        pOutput.accept(ModItems.NETHERRACK_TEXTURED_MAP.get());
                     })
                     .build());
 
