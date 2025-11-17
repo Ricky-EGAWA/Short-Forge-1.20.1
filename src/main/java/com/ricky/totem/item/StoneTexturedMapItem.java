@@ -7,6 +7,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.MapItem;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 
 public class StoneTexturedMapItem extends MapItem {
@@ -62,8 +63,8 @@ public class StoneTexturedMapItem extends MapItem {
                 serverLevel.dimension()
             );
 
-            // 石テクスチャで初期化
-            initializeStoneTexture(data);
+            // 石テクスチャで初期化（地図の色パレットを使用）
+            initializeWithStonePattern(data);
 
             // 地図データを保存
             serverLevel.setMapData(mapName, data);
@@ -74,14 +75,28 @@ public class StoneTexturedMapItem extends MapItem {
         }
     }
 
-    private void initializeStoneTexture(MapItemSavedData data) {
-        // 地図全体を石の色で塗りつぶす
-        // MapColor.STONEのIDは12
-        byte stoneColorId = 12;
+    private void initializeWithStonePattern(MapItemSavedData data) {
+        // 石のテクスチャパターンを地図の色で再現
+        // 地図は128x128ピクセル
+        // 石のような模様を作成（簡易的なパターン）
+
+        // 複数の灰色の色調を使用して石のテクスチャを模倣
+        byte[] stoneColors = new byte[] {
+            (byte)(MapColor.STONE.id * 4 + 0),  // 最も暗い
+            (byte)(MapColor.STONE.id * 4 + 1),  // やや暗い
+            (byte)(MapColor.STONE.id * 4 + 2),  // 通常
+            (byte)(MapColor.STONE.id * 4 + 3)   // やや明るい
+        };
+
+        // ランダムなパターンで石のテクスチャを模倣
+        java.util.Random random = new java.util.Random(12345); // 固定シード
 
         for (int x = 0; x < 128; x++) {
             for (int z = 0; z < 128; z++) {
-                data.colors[x + z * 128] = stoneColorId;
+                // ノイズベースのパターンで石のテクスチャを再現
+                int noiseValue = (int)((Math.sin(x * 0.1) + Math.cos(z * 0.1) + random.nextDouble()) * 1.5);
+                int colorIndex = Math.abs(noiseValue) % stoneColors.length;
+                data.colors[x + z * 128] = stoneColors[colorIndex];
             }
         }
 
