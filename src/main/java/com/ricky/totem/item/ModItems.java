@@ -43,6 +43,9 @@ public class ModItems {
     public static final RegistryObject<Item> STONE_TEXTURED_MAP = ITEMS.register("stone_textured_map",
             () -> new StoneTexturedMapItem(new Item.Properties().stacksTo(64)));
 
+    public static final RegistryObject<Item> NETHERRACK_TEXTURED_MAP = ITEMS.register("netherrack_textured_map",
+            () -> new NetherrackTexturedMapItem(new Item.Properties().stacksTo(64)));
+
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);
     }
