@@ -25,7 +25,7 @@ public class ModItems {
             () -> new BucketItem(Fluids.WATER,(new Item.Properties()).craftRemainder(BUCKET).stacksTo(1)));
 
     public static final RegistryObject<Item> TOTEM_COOKED_BEEF = ITEMS.register("totem_cooked_beef",
-            () -> new Item(new Item.Properties().stacksTo(1).food(COOKED_BEEF_FOOD)));
+            () -> new Item(new Item.Properties().stacksTo(64).food(COOKED_BEEF_FOOD)));
 
     public static final RegistryObject<Item> TOTEM_SWORD = ITEMS.register("totem_sword",
             () -> new SwordItem(Tiers.DIAMOND, 3, -2.4F,
