@@ -5,6 +5,7 @@ import com.ricky.totem.block.ModBlocks;
 import com.ricky.totem.item.ModCreativeModTabs;
 import com.ricky.totem.item.ModItems;
 import com.ricky.totem.item.totem.TotemEffectHandler;
+import com.ricky.totem.network.ModNetworkHandler;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
@@ -40,7 +41,9 @@ public class TotemItemsMod {
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
-
+        event.enqueueWork(() -> {
+            ModNetworkHandler.register();
+        });
     }
 
     private void addCreative(BuildCreativeModeTabContentsEvent event) {

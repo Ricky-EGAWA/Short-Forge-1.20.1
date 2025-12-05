@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.ricky.totem.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "totem.refmap.json",
+  "mixins": [
+  ],
+  "client": [
+    "LivingEntityMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

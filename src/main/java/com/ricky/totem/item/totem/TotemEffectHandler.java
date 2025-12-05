@@ -1,17 +1,21 @@
 package com.ricky.totem.item.totem;
 
 import com.ricky.totem.item.ModItems;
+import com.ricky.totem.network.ModNetworkHandler;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.stats.Stats;
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.registries.ForgeRegistries;
 
 @Mod.EventBusSubscriber(modid = "totem")
 public class TotemEffectHandler {
@@ -67,6 +71,17 @@ public class TotemEffectHandler {
             entity.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 900, 1));
             entity.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 100, 1));
             entity.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 800, 0));
+
+            // カスタムトーテムのテクスチャ情報をクライアントに送信
+            if (entity.level() instanceof ServerLevel serverLevel) {
+                ResourceLocation itemId = ForgeRegistries.ITEMS.getKey(totemStack.getItem());
+                if (itemId != null) {
+                    // エンティティを追跡している全プレイヤーに送信
+                    for (ServerPlayer player : serverLevel.players()) {
+                        ModNetworkHandler.sendToPlayer(player, itemId);
+                    }
+                }
+            }
 
             // トーテムのアニメーション（パーティクル）を表示
             entity.level().broadcastEntityEvent(entity, (byte)35);
