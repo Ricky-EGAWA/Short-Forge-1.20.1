@@ -2,10 +2,10 @@ package com.ricky.totem.mixin;
 
 import com.ricky.totem.client.TotemTextureTracker;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -13,12 +13,15 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * LivingEntityのMixin
+ * LocalPlayerのMixin
  * エンティティイベント35（トーテムアニメーション）を処理し、
  * カスタムトーテムのテクスチャを使用するように変更
+ *
+ * LocalPlayerはLivingEntityのサブクラスで、handleEntityEventをオーバーライドしているため、
+ * LivingEntityへのMixinでは処理できない
  */
-@Mixin(LivingEntity.class)
-public abstract class LivingEntityMixin {
+@Mixin(LocalPlayer.class)
+public abstract class LocalPlayerMixin {
 
     /**
      * handleEntityEventの最初に呼び出され、event 35の場合にカスタム処理を行う
@@ -29,7 +32,7 @@ public abstract class LivingEntityMixin {
             // カスタムトーテムのテクスチャが設定されているか確認
             ResourceLocation customItemId = TotemTextureTracker.consumeCustomTotemTexture();
             if (customItemId != null) {
-                LivingEntity self = (LivingEntity) (Object) this;
+                LocalPlayer self = (LocalPlayer) (Object) this;
 
                 // カスタムアイテムのItemStackを取得
                 ItemStack customStack = TotemTextureTracker.getItemStackForTexture(customItemId);
@@ -43,11 +46,9 @@ public abstract class LivingEntityMixin {
                             0.0, 0.0, 0.0
                     );
 
-                    // 現在のプレイヤーの場合はアニメーションを表示
+                    // アニメーションを表示
                     Minecraft minecraft = Minecraft.getInstance();
-                    if (self == minecraft.player) {
-                        minecraft.gameRenderer.displayItemActivation(customStack);
-                    }
+                    minecraft.gameRenderer.displayItemActivation(customStack);
 
                     // サウンドを再生
                     if (!self.isSilent()) {
