@@ -33,6 +33,12 @@ public class ModNetworkHandler {
                 .encoder(TotemActivationPacket::encode)
                 .consumerMainThread(TotemActivationPacket::handle)
                 .add();
+
+        INSTANCE.messageBuilder(HeartStylePacket.class, nextId(), NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(HeartStylePacket::new)
+                .encoder(HeartStylePacket::encode)
+                .consumerMainThread(HeartStylePacket::handle)
+                .add();
     }
 
     /**
@@ -47,5 +53,12 @@ public class ModNetworkHandler {
      */
     public static void sendToTracking(ServerPlayer player, ResourceLocation textureLocation) {
         INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> player), new TotemActivationPacket(textureLocation));
+    }
+
+    /**
+     * プレイヤーにハートスタイルパケットを送信
+     */
+    public static void sendHeartStyle(ServerPlayer player, boolean hardcoreEnabled) {
+        INSTANCE.send(PacketDistributor.PLAYER.with(() -> player), new HeartStylePacket(hardcoreEnabled));
     }
 }
