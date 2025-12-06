@@ -80,12 +80,12 @@ public class StoneTexturedMapItem extends MapItem {
         // 地図は128x128ピクセル
         // 石のような模様を作成（簡易的なパターン）
 
-        // 複数の灰色の色調を使用して石のテクスチャを模倣
+        // 暗い色調のみを使用して実際の石に近い見た目にする
+        // brightness: 0 = 最も暗い(71%), 1 = やや暗い(86%), 2 = 通常(100%), 3 = 明るい
         byte[] stoneColors = new byte[] {
             (byte)(MapColor.STONE.id * 4 + 0),  // 最も暗い
+            (byte)(MapColor.STONE.id * 4 + 0),  // 最も暗い（出現率を上げる）
             (byte)(MapColor.STONE.id * 4 + 1),  // やや暗い
-            (byte)(MapColor.STONE.id * 4 + 2),  // 通常
-            (byte)(MapColor.STONE.id * 4 + 3)   // やや明るい
         };
 
         // ランダムなパターンで石のテクスチャを模倣
