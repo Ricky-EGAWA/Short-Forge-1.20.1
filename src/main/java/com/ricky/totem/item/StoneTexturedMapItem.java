@@ -79,12 +79,12 @@ public class StoneTexturedMapItem extends MapItem {
         // 石のテクスチャパターンを地図の色で再現
         // 地図は128x128ピクセル
 
-        // DEEPSLATEはSTONEより暗い色
-        // brightness: 0 = 最も暗い(71%), 1 = やや暗い(86%)
+        // COLOR_GRAYは暗い灰色
+        // brightness: 0 = 最も暗い(71%)
         byte[] stoneColors = new byte[] {
-            (byte)(MapColor.DEEPSLATE.id * 4 + 0),  // 深層岩 最も暗い
-            (byte)(MapColor.DEEPSLATE.id * 4 + 0),  // 深層岩 最も暗い
-            (byte)(MapColor.DEEPSLATE.id * 4 + 1),  // 深層岩 やや暗い
+            (byte)(MapColor.COLOR_GRAY.id * 4 + 0),  // 灰色 最も暗い
+            (byte)(MapColor.COLOR_GRAY.id * 4 + 0),  // 灰色 最も暗い
+            (byte)(MapColor.COLOR_GRAY.id * 4 + 1),  // 灰色 やや暗い
         };
 
         // ランダムなパターンで石のテクスチャを模倣
