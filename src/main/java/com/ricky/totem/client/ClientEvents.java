@@ -82,7 +82,7 @@ public class ClientEvents {
         float z = -0.01F;
 
         // 暗い色で描画（128/255 = 約50%の明るさ）
-        int darkness = 138;
+        int darkness = 148;
 
         // 4つの頂点で四角形を描画（地図と同じサイズ）
         vertexConsumer.vertex(matrix4f, min, max, z).color(darkness, darkness, darkness, 255).uv(minU, maxV).uv2(combinedLight).endVertex();
