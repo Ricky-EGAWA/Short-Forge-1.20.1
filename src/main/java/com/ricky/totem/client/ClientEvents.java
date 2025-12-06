@@ -81,10 +81,13 @@ public class ClientEvents {
         float max = 64.0F;
         float z = -0.01F;
 
+        // 暗い色で描画（128/255 = 約50%の明るさ）
+        int darkness = 138;
+
         // 4つの頂点で四角形を描画（地図と同じサイズ）
-        vertexConsumer.vertex(matrix4f, min, max, z).color(255, 255, 255, 255).uv(minU, maxV).uv2(combinedLight).endVertex();
-        vertexConsumer.vertex(matrix4f, max, max, z).color(255, 255, 255, 255).uv(maxU, maxV).uv2(combinedLight).endVertex();
-        vertexConsumer.vertex(matrix4f, max, min, z).color(255, 255, 255, 255).uv(maxU, minV).uv2(combinedLight).endVertex();
-        vertexConsumer.vertex(matrix4f, min, min, z).color(255, 255, 255, 255).uv(minU, minV).uv2(combinedLight).endVertex();
+        vertexConsumer.vertex(matrix4f, min, max, z).color(darkness, darkness, darkness, 255).uv(minU, maxV).uv2(combinedLight).endVertex();
+        vertexConsumer.vertex(matrix4f, max, max, z).color(darkness, darkness, darkness, 255).uv(maxU, maxV).uv2(combinedLight).endVertex();
+        vertexConsumer.vertex(matrix4f, max, min, z).color(darkness, darkness, darkness, 255).uv(maxU, minV).uv2(combinedLight).endVertex();
+        vertexConsumer.vertex(matrix4f, min, min, z).color(darkness, darkness, darkness, 255).uv(minU, minV).uv2(combinedLight).endVertex();
     }
 }
