@@ -1,10 +1,13 @@
 package com.ricky.totem.client;
 
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Axis;
 import com.ricky.totem.TotemItemsMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
@@ -18,7 +21,29 @@ import net.minecraft.world.inventory.InventoryMenu;
 import org.joml.Matrix4f;
 
 @Mod.EventBusSubscriber(modid = TotemItemsMod.MOD_ID, value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.FORGE)
-public class ClientEvents {
+public class ClientEvents extends RenderStateShard {
+
+    // RenderStateShardの継承に必要なダミーコンストラクタ
+    public ClientEvents() {
+        super("dummy", () -> {}, () -> {});
+    }
+
+    // カリングを有効にしたカスタムRenderType（裏側から透明にするため）
+    private static final RenderType MAP_TEXTURE_CULLED = RenderType.create(
+            "map_texture_culled",
+            DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP,
+            VertexFormat.Mode.QUADS,
+            256,
+            false,
+            true,
+            RenderType.CompositeState.builder()
+                    .setShaderState(RENDERTYPE_TEXT_SHADER)
+                    .setTextureState(new TextureStateShard(InventoryMenu.BLOCK_ATLAS, false, false))
+                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                    .setLightmapState(LIGHTMAP)
+                    .setCullState(CULL)
+                    .createCompositeState(false)
+    );
 
     @SubscribeEvent
     public static void onRenderItemInFrame(RenderItemInFrameEvent event) {
@@ -69,7 +94,8 @@ public class ClientEvents {
 
     private static void renderBlockTexture(PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, TextureAtlasSprite textureSprite) {
         Matrix4f matrix4f = poseStack.last().pose();
-        VertexConsumer vertexConsumer = bufferSource.getBuffer(RenderType.text(InventoryMenu.BLOCK_ATLAS));
+        // カリングを有効にしたカスタムRenderTypeを使用（裏側から見ると透明になる）
+        VertexConsumer vertexConsumer = bufferSource.getBuffer(MAP_TEXTURE_CULLED);
 
         float minU = textureSprite.getU0();
         float maxU = textureSprite.getU1();
