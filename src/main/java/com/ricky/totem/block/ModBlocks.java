@@ -23,6 +23,9 @@ public class ModBlocks {
     public static final RegistryObject<Block> OBSIDIAN = registerEdibleBlockItem("obsidian",
             () -> new Block(BlockBehaviour.Properties.copy(Blocks.OBSIDIAN)));
 
+    public static final RegistryObject<Block> DIAMOND8 = registerEdibleBlockItem("diamond8",
+            () -> new Block(BlockBehaviour.Properties.copy(Blocks.DIAMOND_ORE)));
+
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block) {
         RegistryObject<T> toReturn = BLOCKS.register(name, block);
         registerBlockItem(name, toReturn);

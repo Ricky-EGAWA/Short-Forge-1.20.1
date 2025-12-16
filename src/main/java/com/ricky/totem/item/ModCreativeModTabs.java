@@ -45,6 +45,14 @@ public class ModCreativeModTabs {
                     })
                     .build());
 
+    public static final RegistryObject<CreativeModeTab> OTHERS_TAB = CREATIVE_MODE_TABS.register("others_tab",
+            () -> CreativeModeTab.builder().icon(() -> new ItemStack(Items.MAP))
+                    .title(Component.translatable("creativetab.others_tab"))
+                    .displayItems((pParameters, pOutput) -> {
+                        pOutput.accept(ModBlocks.DIAMOND8.get());
+                    })
+                    .build());
+
 
     public static void register(IEventBus eventBus) {
         CREATIVE_MODE_TABS.register(eventBus);
