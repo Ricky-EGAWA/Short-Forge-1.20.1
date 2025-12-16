@@ -9,7 +9,8 @@
   "client": [
     "ClientPacketListenerMixin",
     "GuiMixin",
-    "ItemFrameRendererMixin"
+    "ItemFrameRendererMixin",
+    "ZombieRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
