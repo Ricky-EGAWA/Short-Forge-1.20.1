@@ -10,7 +10,9 @@
     "ClientPacketListenerMixin",
     "GuiMixin",
     "ItemFrameRendererMixin",
-    "ZombieRendererMixin"
+    "ZombieRendererMixin",
+    "ChickenRendererMixin",
+    "EndermanRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

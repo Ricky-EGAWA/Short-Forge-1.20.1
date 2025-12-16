@@ -1,9 +1,16 @@
 package com.ricky.totem.client.renderer;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.ricky.totem.TotemItemsMod;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.model.PlayerModel;
+import net.minecraft.client.model.geom.ModelLayers;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.Chicken;
 import net.minecraft.world.entity.monster.EnderMan;
 
@@ -12,8 +19,7 @@ import net.minecraft.world.entity.monster.EnderMan;
  */
 public class CustomEntityRendererManager {
 
-    private static NamedEntityPlayerRenderer<Chicken> donaldRenderer;
-    private static NamedEntityPlayerRenderer<EnderMan> minnieRenderer;
+    private static PlayerModel<LivingEntity> playerModel;
 
     public static final ResourceLocation DONALD_TEXTURE = new ResourceLocation(TotemItemsMod.MOD_ID, "textures/entity/chicken/donald.png");
     public static final ResourceLocation MINNIE_TEXTURE = new ResourceLocation(TotemItemsMod.MOD_ID, "textures/entity/enderman/minnie.png");
@@ -21,41 +27,16 @@ public class CustomEntityRendererManager {
     private static boolean initialized = false;
 
     /**
-     * レンダラーを初期化（遅延初期化）
+     * プレイヤーモデルを初期化（遅延初期化）
      */
     public static void ensureInitialized() {
         if (initialized) return;
 
         Minecraft mc = Minecraft.getInstance();
-        if (mc.getEntityRenderDispatcher() == null) return;
+        if (mc.getEntityModels() == null) return;
 
-        EntityRendererProvider.Context context = new EntityRendererProvider.Context(
-                mc.getEntityRenderDispatcher(),
-                mc.getItemRenderer(),
-                mc.getBlockRenderer(),
-                mc.gameRenderer.itemInHandRenderer,
-                mc.getResourceManager(),
-                mc.getEntityModels(),
-                mc.font
-        );
-
-        // Donald（鶏）用レンダラー - 鶏は小さいのでスケールを調整
-        donaldRenderer = new NamedEntityPlayerRenderer<>(context, DONALD_TEXTURE, 0.5F);
-
-        // Minnie（エンダーマン）用レンダラー - エンダーマンは大きいのでスケールを調整
-        minnieRenderer = new NamedEntityPlayerRenderer<>(context, MINNIE_TEXTURE, 0.9F);
-
+        playerModel = new PlayerModel<>(mc.getEntityModels().bakeLayer(ModelLayers.PLAYER), false);
         initialized = true;
-    }
-
-    public static NamedEntityPlayerRenderer<Chicken> getDonaldRenderer() {
-        ensureInitialized();
-        return donaldRenderer;
-    }
-
-    public static NamedEntityPlayerRenderer<EnderMan> getMinnieRenderer() {
-        ensureInitialized();
-        return minnieRenderer;
     }
 
     /**
@@ -70,5 +51,37 @@ public class CustomEntityRendererManager {
      */
     public static boolean isMinnie(EnderMan enderman) {
         return enderman.hasCustomName() && "Minnie".equals(enderman.getCustomName().getString());
+    }
+
+    /**
+     * プレイヤーモデルでエンティティをレンダリング
+     */
+    public static void renderAsPlayer(LivingEntity entity, float partialTicks, PoseStack poseStack,
+                                       MultiBufferSource buffer, int packedLight, ResourceLocation texture, float scale) {
+        ensureInitialized();
+        if (playerModel == null) return;
+
+        poseStack.pushPose();
+
+        // スケール調整
+        poseStack.scale(scale, scale, scale);
+
+        // モデルのアニメーション設定
+        float limbSwing = entity.walkAnimation.position();
+        float limbSwingAmount = entity.walkAnimation.speed(partialTicks);
+        float ageInTicks = entity.tickCount + partialTicks;
+        float headYaw = entity.getYHeadRot() - entity.yBodyRot;
+        float headPitch = entity.getXRot();
+
+        // モデルのポーズ設定
+        playerModel.young = entity.isBaby();
+        playerModel.prepareMobModel(entity, limbSwing, limbSwingAmount, partialTicks);
+        playerModel.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, headYaw, headPitch);
+
+        // レンダリング
+        VertexConsumer vertexConsumer = buffer.getBuffer(RenderType.entityCutoutNoCull(texture));
+        playerModel.renderToBuffer(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+
+        poseStack.popPose();
     }
 }
