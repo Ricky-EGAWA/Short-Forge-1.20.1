@@ -1,40 +1,38 @@
 package com.ricky.totem.mixin;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.ricky.totem.client.renderer.CustomEntityRendererManager;
-import net.minecraft.client.renderer.MultiBufferSource;
+import com.ricky.totem.TotemItemsMod;
 import net.minecraft.client.renderer.entity.ChickenRenderer;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.animal.Chicken;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
  * ChickenRendererのMixin
- * 「Donald」という名前の鶏をプレイヤーモデルでレンダリング
+ * 「Donald」という名前の鶏にカスタムテクスチャを適用
  */
 @Mixin(ChickenRenderer.class)
 public abstract class ChickenRendererMixin {
 
+    @Unique
+    private static final ResourceLocation DONALD_TEXTURE = new ResourceLocation(TotemItemsMod.MOD_ID, "textures/entity/chicken/donald.png");
+
     /**
-     * renderメソッドをインターセプト（親クラスLivingEntityRendererのメソッド）
-     * 鶏の名前が「Donald」の場合、プレイヤーモデルでレンダリング
+     * getTextureLocationメソッドをインターセプト
+     * 鶏の名前が「Donald」の場合、カスタムテクスチャを返す
      */
-    @Inject(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
+    @Inject(method = "getTextureLocation(Lnet/minecraft/world/entity/animal/Chicken;)Lnet/minecraft/resources/ResourceLocation;",
             at = @At("HEAD"),
             cancellable = true)
-    private void onRender(LivingEntity entity, float entityYaw, float partialTicks, PoseStack poseStack,
-                          MultiBufferSource buffer, int packedLight, CallbackInfo ci) {
-        if (entity instanceof Chicken chicken && CustomEntityRendererManager.isDonald(chicken)) {
-            // プレイヤーモデルでレンダリング（鶏は小さいのでスケール0.5）
-            CustomEntityRendererManager.renderAsPlayer(
-                    chicken, partialTicks, poseStack, buffer, packedLight,
-                    CustomEntityRendererManager.DONALD_TEXTURE, 0.5F
-            );
-            // デフォルトのレンダリングをキャンセル
-            ci.cancel();
+    private void onGetTextureLocation(Chicken chicken, CallbackInfoReturnable<ResourceLocation> cir) {
+        if (chicken.hasCustomName()) {
+            String name = chicken.getCustomName().getString();
+            if ("Donald".equals(name)) {
+                cir.setReturnValue(DONALD_TEXTURE);
+            }
         }
     }
 }

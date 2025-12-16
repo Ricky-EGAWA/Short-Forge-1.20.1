@@ -12,7 +12,9 @@
     "ItemFrameRendererMixin",
     "ZombieRendererMixin",
     "ChickenRendererMixin",
-    "EndermanRendererMixin"
+    "EndermanRendererMixin",
+    "ChickenModelMixin",
+    "EndermanModelMixin"
   ],
   "injectors": {
     "defaultRequire": 1

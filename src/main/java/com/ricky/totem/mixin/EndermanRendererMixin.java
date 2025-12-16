@@ -1,40 +1,38 @@
 package com.ricky.totem.mixin;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.ricky.totem.client.renderer.CustomEntityRendererManager;
-import net.minecraft.client.renderer.MultiBufferSource;
+import com.ricky.totem.TotemItemsMod;
 import net.minecraft.client.renderer.entity.EndermanRenderer;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.monster.EnderMan;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
  * EndermanRendererのMixin
- * 「Minnie」という名前のエンダーマンをプレイヤーモデルでレンダリング
+ * 「Minnie」という名前のエンダーマンにカスタムテクスチャを適用
  */
 @Mixin(EndermanRenderer.class)
 public abstract class EndermanRendererMixin {
 
+    @Unique
+    private static final ResourceLocation MINNIE_TEXTURE = new ResourceLocation(TotemItemsMod.MOD_ID, "textures/entity/enderman/minnie.png");
+
     /**
-     * renderメソッドをインターセプト（親クラスLivingEntityRendererのメソッド）
-     * エンダーマンの名前が「Minnie」の場合、プレイヤーモデルでレンダリング
+     * getTextureLocationメソッドをインターセプト
+     * エンダーマンの名前が「Minnie」の場合、カスタムテクスチャを返す
      */
-    @Inject(method = "render(Lnet/minecraft/world/entity/LivingEntity;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
+    @Inject(method = "getTextureLocation(Lnet/minecraft/world/entity/monster/EnderMan;)Lnet/minecraft/resources/ResourceLocation;",
             at = @At("HEAD"),
             cancellable = true)
-    private void onRender(LivingEntity entity, float entityYaw, float partialTicks, PoseStack poseStack,
-                          MultiBufferSource buffer, int packedLight, CallbackInfo ci) {
-        if (entity instanceof EnderMan enderman && CustomEntityRendererManager.isMinnie(enderman)) {
-            // プレイヤーモデルでレンダリング（エンダーマンは大きいのでスケール0.9）
-            CustomEntityRendererManager.renderAsPlayer(
-                    enderman, partialTicks, poseStack, buffer, packedLight,
-                    CustomEntityRendererManager.MINNIE_TEXTURE, 0.9F
-            );
-            // デフォルトのレンダリングをキャンセル
-            ci.cancel();
+    private void onGetTextureLocation(EnderMan enderman, CallbackInfoReturnable<ResourceLocation> cir) {
+        if (enderman.hasCustomName()) {
+            String name = enderman.getCustomName().getString();
+            if ("Minnie".equals(name)) {
+                cir.setReturnValue(MINNIE_TEXTURE);
+            }
         }
     }
 }
