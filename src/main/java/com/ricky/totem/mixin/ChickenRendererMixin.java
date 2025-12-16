@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.ricky.totem.client.renderer.CustomEntityRendererManager;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.ChickenRenderer;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.Chicken;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -18,15 +19,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ChickenRendererMixin {
 
     /**
-     * renderメソッドをインターセプト
+     * renderメソッドをインターセプト（親クラスMobRendererのメソッド）
      * 鶏の名前が「Donald」の場合、プレイヤーモデルでレンダリング
      */
-    @Inject(method = "render(Lnet/minecraft/world/entity/animal/Chicken;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
+    @Inject(method = "render(Lnet/minecraft/world/entity/Mob;FFLcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V",
             at = @At("HEAD"),
             cancellable = true)
-    private void onRender(Chicken chicken, float entityYaw, float partialTicks, PoseStack poseStack,
+    private void onRender(Mob mob, float entityYaw, float partialTicks, PoseStack poseStack,
                           MultiBufferSource buffer, int packedLight, CallbackInfo ci) {
-        if (CustomEntityRendererManager.isDonald(chicken)) {
+        if (mob instanceof Chicken chicken && CustomEntityRendererManager.isDonald(chicken)) {
             // プレイヤーモデルでレンダリング（鶏は小さいのでスケール0.5）
             CustomEntityRendererManager.renderAsPlayer(
                     chicken, partialTicks, poseStack, buffer, packedLight,
