@@ -6,7 +6,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EndermanModel;
 import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.ModelLayers;
-import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.EnderMan;
 import org.spongepowered.asm.mixin.Mixin;
@@ -32,9 +31,6 @@ public abstract class EndermanModelMixin<T extends LivingEntity> {
     private boolean totem$isMinnie = false;
 
     @Unique
-    private T totem$currentEntity;
-
-    @Unique
     private static void totem$ensurePlayerModelInitialized() {
         if (totem$initialized) return;
         Minecraft mc = Minecraft.getInstance();
@@ -46,12 +42,12 @@ public abstract class EndermanModelMixin<T extends LivingEntity> {
 
     /**
      * setupAnimの開始時に、Minnieかどうかをチェック
+     * EndermanModel<T extends LivingEntity> なのでLivingEntity型を使用
      */
     @Inject(method = "setupAnim(Lnet/minecraft/world/entity/LivingEntity;FFFFF)V",
             at = @At("HEAD"))
     private void onSetupAnimStart(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, CallbackInfo ci) {
         totem$isMinnie = false;
-        totem$currentEntity = entity;
 
         if (entity instanceof EnderMan enderman) {
             if (enderman.hasCustomName() && "Minnie".equals(enderman.getCustomName().getString())) {
@@ -69,8 +65,9 @@ public abstract class EndermanModelMixin<T extends LivingEntity> {
 
     /**
      * renderToBufferをインターセプトして、Minnieの場合はプレイヤーモデルでレンダリング
+     * renderToBufferはModelクラスに定義されている
      */
-    @Inject(method = "renderToBuffer",
+    @Inject(method = "renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFF)V",
             at = @At("HEAD"),
             cancellable = true)
     private void onRenderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha, CallbackInfo ci) {

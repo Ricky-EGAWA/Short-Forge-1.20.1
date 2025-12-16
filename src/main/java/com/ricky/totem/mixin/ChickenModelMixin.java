@@ -44,6 +44,17 @@ public abstract class ChickenModelMixin<T extends Entity> {
     private boolean totem$isDonald = false;
 
     @Unique
+    private float totem$limbSwing;
+    @Unique
+    private float totem$limbSwingAmount;
+    @Unique
+    private float totem$ageInTicks;
+    @Unique
+    private float totem$netHeadYaw;
+    @Unique
+    private float totem$headPitch;
+
+    @Unique
     private static void totem$ensurePlayerModelInitialized() {
         if (totem$initialized) return;
         Minecraft mc = Minecraft.getInstance();
@@ -55,8 +66,9 @@ public abstract class ChickenModelMixin<T extends Entity> {
 
     /**
      * setupAnimの開始時に、Donaldかどうかをチェック
+     * ChickenModel<T extends Entity> なのでEntity型を使用
      */
-    @Inject(method = "setupAnim(Lnet/minecraft/world/entity/animal/Chicken;FFFFF)V",
+    @Inject(method = "setupAnim(Lnet/minecraft/world/entity/Entity;FFFFF)V",
             at = @At("HEAD"))
     private void onSetupAnimStart(T entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch, CallbackInfo ci) {
         totem$isDonald = false;
@@ -64,6 +76,13 @@ public abstract class ChickenModelMixin<T extends Entity> {
             if (chicken.hasCustomName() && "Donald".equals(chicken.getCustomName().getString())) {
                 totem$isDonald = true;
                 totem$ensurePlayerModelInitialized();
+
+                // アニメーションパラメータを保存
+                totem$limbSwing = limbSwing;
+                totem$limbSwingAmount = limbSwingAmount;
+                totem$ageInTicks = ageInTicks;
+                totem$netHeadYaw = netHeadYaw;
+                totem$headPitch = headPitch;
 
                 // 元のパーツを非表示
                 head.visible = false;
@@ -78,7 +97,7 @@ public abstract class ChickenModelMixin<T extends Entity> {
                 // プレイヤーモデルのアニメーションを設定
                 if (totem$playerModel != null) {
                     totem$playerModel.young = chicken.isBaby();
-                    totem$playerModel.setupAnim((LivingEntity) entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
+                    totem$playerModel.setupAnim(chicken, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
                 }
             }
         }
@@ -86,8 +105,9 @@ public abstract class ChickenModelMixin<T extends Entity> {
 
     /**
      * renderToBufferをインターセプトして、Donaldの場合はプレイヤーモデルでレンダリング
+     * renderToBufferはModelクラスに定義されている
      */
-    @Inject(method = "renderToBuffer",
+    @Inject(method = "renderToBuffer(Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;IIFFFF)V",
             at = @At("HEAD"),
             cancellable = true)
     private void onRenderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha, CallbackInfo ci) {
