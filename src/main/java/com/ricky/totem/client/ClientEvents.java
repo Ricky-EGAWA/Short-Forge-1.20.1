@@ -6,13 +6,21 @@ import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Axis;
 import com.ricky.totem.TotemItemsMod;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.PlayerModel;
+import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderStateShard;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.animal.Chicken;
+import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderItemInFrameEvent;
+import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -115,5 +123,75 @@ public class ClientEvents extends RenderStateShard {
         vertexConsumer.vertex(matrix4f, max, max, z).color(darkness, darkness, darkness, 255).uv(maxU, maxV).uv2(combinedLight).endVertex();
         vertexConsumer.vertex(matrix4f, max, min, z).color(darkness, darkness, darkness, 255).uv(maxU, minV).uv2(combinedLight).endVertex();
         vertexConsumer.vertex(matrix4f, min, min, z).color(darkness, darkness, darkness, 255).uv(minU, minV).uv2(combinedLight).endVertex();
+    }
+
+    // プレイヤーモデル関連
+    private static PlayerModel<LivingEntity> playerModel;
+    private static boolean playerModelInitialized = false;
+
+    private static final ResourceLocation DONALD_TEXTURE = new ResourceLocation(TotemItemsMod.MOD_ID, "textures/entity/chicken/donald.png");
+    private static final ResourceLocation MINNIE_TEXTURE = new ResourceLocation(TotemItemsMod.MOD_ID, "textures/entity/enderman/minnie.png");
+
+    private static void ensurePlayerModelInitialized() {
+        if (playerModelInitialized) return;
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.getEntityModels() != null) {
+            playerModel = new PlayerModel<>(mc.getEntityModels().bakeLayer(ModelLayers.PLAYER), false);
+            playerModelInitialized = true;
+        }
+    }
+
+    /**
+     * 「Donald」という名前の鶏と「Minnie」という名前のエンダーマンに
+     * プレイヤーモデルを追加でレンダリング
+     */
+    @SubscribeEvent
+    public static void onRenderLivingPost(RenderLivingEvent.Post<?, ?> event) {
+        LivingEntity entity = event.getEntity();
+
+        // 鶏の「Donald」をチェック
+        if (entity instanceof Chicken chicken) {
+            if (chicken.hasCustomName() && "Donald".equals(chicken.getCustomName().getString())) {
+                renderPlayerModel(chicken, event.getPartialTick(), event.getPoseStack(),
+                        event.getMultiBufferSource(), event.getPackedLight(), DONALD_TEXTURE, 0.5F);
+            }
+        }
+        // エンダーマンの「Minnie」をチェック
+        else if (entity instanceof EnderMan enderman) {
+            if (enderman.hasCustomName() && "Minnie".equals(enderman.getCustomName().getString())) {
+                renderPlayerModel(enderman, event.getPartialTick(), event.getPoseStack(),
+                        event.getMultiBufferSource(), event.getPackedLight(), MINNIE_TEXTURE, 0.9F);
+            }
+        }
+    }
+
+    private static void renderPlayerModel(LivingEntity entity, float partialTicks, PoseStack poseStack,
+                                          MultiBufferSource buffer, int packedLight, ResourceLocation texture, float scale) {
+        ensurePlayerModelInitialized();
+        if (playerModel == null) return;
+
+        poseStack.pushPose();
+
+        // スケール調整
+        poseStack.scale(scale, scale, scale);
+        poseStack.translate(0, 1.5F / scale, 0);
+
+        // モデルのアニメーション設定
+        float limbSwing = entity.walkAnimation.position();
+        float limbSwingAmount = entity.walkAnimation.speed(partialTicks);
+        float ageInTicks = entity.tickCount + partialTicks;
+        float headYaw = entity.getYHeadRot() - entity.yBodyRot;
+        float headPitch = entity.getXRot();
+
+        // モデルのポーズ設定
+        playerModel.young = entity.isBaby();
+        playerModel.prepareMobModel(entity, limbSwing, limbSwingAmount, partialTicks);
+        playerModel.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, headYaw, headPitch);
+
+        // レンダリング
+        VertexConsumer vertexConsumer = buffer.getBuffer(RenderType.entityCutoutNoCull(texture));
+        playerModel.renderToBuffer(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
+
+        poseStack.popPose();
     }
 }
