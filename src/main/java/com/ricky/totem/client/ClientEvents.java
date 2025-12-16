@@ -5,14 +5,18 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Axis;
 import com.ricky.totem.TotemItemsMod;
+import com.ricky.totem.client.renderer.CustomEntityRendererManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.world.entity.animal.Chicken;
+import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderItemInFrameEvent;
+import net.minecraftforge.client.event.RenderLivingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -115,5 +119,46 @@ public class ClientEvents extends RenderStateShard {
         vertexConsumer.vertex(matrix4f, max, max, z).color(darkness, darkness, darkness, 255).uv(maxU, maxV).uv2(combinedLight).endVertex();
         vertexConsumer.vertex(matrix4f, max, min, z).color(darkness, darkness, darkness, 255).uv(maxU, minV).uv2(combinedLight).endVertex();
         vertexConsumer.vertex(matrix4f, min, min, z).color(darkness, darkness, darkness, 255).uv(minU, minV).uv2(combinedLight).endVertex();
+    }
+
+    /**
+     * 鶏の「Donald」とエンダーマンの「Minnie」をプレイヤーモデルでレンダリング
+     */
+    @SubscribeEvent
+    public static void onRenderLivingPre(RenderLivingEvent.Pre<?, ?> event) {
+        // 鶏の「Donald」をチェック
+        if (event.getEntity() instanceof Chicken chicken) {
+            if (CustomEntityRendererManager.isDonald(chicken)) {
+                // デフォルトレンダリングをキャンセル
+                event.setCanceled(true);
+
+                // カスタムレンダラーでレンダリング
+                CustomEntityRendererManager.getDonaldRenderer().render(
+                        chicken,
+                        chicken.getYRot(),
+                        event.getPartialTick(),
+                        event.getPoseStack(),
+                        event.getMultiBufferSource(),
+                        event.getPackedLight()
+                );
+            }
+        }
+        // エンダーマンの「Minnie」をチェック
+        else if (event.getEntity() instanceof EnderMan enderman) {
+            if (CustomEntityRendererManager.isMinnie(enderman)) {
+                // デフォルトレンダリングをキャンセル
+                event.setCanceled(true);
+
+                // カスタムレンダラーでレンダリング
+                CustomEntityRendererManager.getMinnieRenderer().render(
+                        enderman,
+                        enderman.getYRot(),
+                        event.getPartialTick(),
+                        event.getPoseStack(),
+                        event.getMultiBufferSource(),
+                        event.getPackedLight()
+                );
+            }
+        }
     }
 }
