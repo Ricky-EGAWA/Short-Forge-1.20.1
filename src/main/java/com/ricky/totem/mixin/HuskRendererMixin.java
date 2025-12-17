@@ -2,7 +2,8 @@ package com.ricky.totem.mixin;
 
 import com.ricky.totem.TotemItemsMod;
 import net.minecraft.client.model.ZombieModel;
-import net.minecraft.client.renderer.entity.AbstractZombieRenderer;
+import net.minecraft.client.renderer.entity.DrownedRenderer;
+import net.minecraft.client.renderer.entity.HuskRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.monster.Zombie;
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,11 +16,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * AbstractZombieRendererのMixin
  * 「Micky」という名前のゾンビにカスタムテクスチャを適用
  */
-@Mixin(AbstractZombieRenderer.class)
-public abstract class ZombieRendererMixin<T extends Zombie, M extends ZombieModel<T>> {
+@Mixin(HuskRenderer.class)
+public abstract class HuskRendererMixin<T extends Zombie, M extends ZombieModel<T>> {
 
     @Unique
-    private static final ResourceLocation MICKY_TEXTURE = new ResourceLocation(TotemItemsMod.MOD_ID, "textures/entity/skin/micky.png");
+    private static final ResourceLocation MICKY_TEXTURE = new ResourceLocation(TotemItemsMod.MOD_ID, "textures/entity/skin/donald.png");
 
     /**
      * getTextureLocationメソッドをインターセプト
@@ -31,7 +32,7 @@ public abstract class ZombieRendererMixin<T extends Zombie, M extends ZombieMode
     private void onGetTextureLocation(T zombie, CallbackInfoReturnable<ResourceLocation> cir) {
         if (zombie.hasCustomName()) {
             String name = zombie.getCustomName().getString();
-            if ("Micky".equals(name)) {
+            if ("Donald".equals(name)) {
                 cir.setReturnValue(MICKY_TEXTURE);
             }
         }
