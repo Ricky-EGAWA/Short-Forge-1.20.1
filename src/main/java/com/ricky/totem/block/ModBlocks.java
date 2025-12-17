@@ -26,6 +26,15 @@ public class ModBlocks {
     public static final RegistryObject<Block> DIAMOND8 = registerEdibleBlockItem("diamond8",
             () -> new Block(BlockBehaviour.Properties.copy(Blocks.DIAMOND_ORE)));
 
+    public static final RegistryObject<Block> STONE104 = registerBlock("stone104",
+            () -> new Block(BlockBehaviour.Properties.copy(Blocks.STONE)));
+    public static final RegistryObject<Block> STONE116 = registerBlock("stone116",
+            () -> new Block(BlockBehaviour.Properties.copy(Blocks.STONE)));
+    public static final RegistryObject<Block> STONE127 = registerBlock("stone127",
+            () -> new Block(BlockBehaviour.Properties.copy(Blocks.STONE)));
+    public static final RegistryObject<Block> STONE143 = registerBlock("stone143",
+            () -> new Block(BlockBehaviour.Properties.copy(Blocks.STONE)));
+
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block) {
         RegistryObject<T> toReturn = BLOCKS.register(name, block);
         registerBlockItem(name, toReturn);

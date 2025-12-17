@@ -46,10 +46,14 @@ public class ModCreativeModTabs {
                     .build());
 
     public static final RegistryObject<CreativeModeTab> OTHERS_TAB = CREATIVE_MODE_TABS.register("others_tab",
-            () -> CreativeModeTab.builder().icon(() -> new ItemStack(Items.MAP))
+            () -> CreativeModeTab.builder().icon(() -> new ItemStack(ModBlocks.STONE104.get()))
                     .title(Component.translatable("creativetab.others_tab"))
                     .displayItems((pParameters, pOutput) -> {
                         pOutput.accept(ModBlocks.DIAMOND8.get());
+                        pOutput.accept(ModBlocks.STONE104.get());
+                        pOutput.accept(ModBlocks.STONE116.get());
+                        pOutput.accept(ModBlocks.STONE127.get());
+                        pOutput.accept(ModBlocks.STONE143.get());
                     })
                     .build());
 

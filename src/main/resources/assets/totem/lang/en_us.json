@@ -10,6 +10,12 @@
   "item.totem.netherrack_textured_map": "Netherrack Textured Map",
   "block.totem.obsidian": "Obsidian",
 
+  "block.totem.diamond8": "diamond 8",
+  "block.totem.stone104": "Stone 104",
+  "block.totem.stone116": "Stone 116",
+  "block.totem.stone127": "Stone 127",
+  "block.totem.stone143": "Stone 143",
+
   "creativetab.totem_tab": "Totem",
   "creativetab.edible_tab": "Edible Items",
   "creativetab.map_tab": "Map Items",
