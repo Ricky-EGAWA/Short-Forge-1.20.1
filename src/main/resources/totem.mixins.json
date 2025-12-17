@@ -12,6 +12,7 @@
     "ItemFrameRendererMixin",
     "ZombieRendererMixin",
     "DrownedRendererMixin",
+    "DrownedOuterLayerMixin",
     "HuskRendererMixin"
   ],
   "injectors": {
