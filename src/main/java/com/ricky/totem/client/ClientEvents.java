@@ -14,8 +14,8 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.animal.Chicken;
-import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.Drowned;
+import net.minecraft.world.entity.monster.Husk;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.api.distmarker.Dist;
@@ -129,8 +129,8 @@ public class ClientEvents extends RenderStateShard {
     private static PlayerModel<LivingEntity> playerModel;
     private static boolean playerModelInitialized = false;
 
-    private static final ResourceLocation DONALD_TEXTURE = new ResourceLocation(TotemItemsMod.MOD_ID, "textures/entity/chicken/donald.png");
-    private static final ResourceLocation MINNIE_TEXTURE = new ResourceLocation(TotemItemsMod.MOD_ID, "textures/entity/enderman/minnie.png");
+    private static final ResourceLocation DONALD_TEXTURE = new ResourceLocation(TotemItemsMod.MOD_ID, "textures/entity/husk/donald.png");
+    private static final ResourceLocation MINNIE_TEXTURE = new ResourceLocation(TotemItemsMod.MOD_ID, "textures/entity/drowned/minnie.png");
 
     private static void ensurePlayerModelInitialized() {
         if (playerModelInitialized) return;
@@ -142,24 +142,24 @@ public class ClientEvents extends RenderStateShard {
     }
 
     /**
-     * 「Donald」という名前の鶏と「Minnie」という名前のエンダーマンに
+     * 「Donald」という名前のハスクと「Minnie」という名前のドラウンドに
      * プレイヤーモデルを追加でレンダリング
      */
     @SubscribeEvent
     public static void onRenderLivingPost(RenderLivingEvent.Post<?, ?> event) {
         LivingEntity entity = event.getEntity();
 
-        // 鶏の「Donald」をチェック
-        if (entity instanceof Chicken chicken) {
-            if (chicken.hasCustomName() && "Donald".equals(chicken.getCustomName().getString())) {
-                renderPlayerModel(chicken, event.getPartialTick(), event.getPoseStack(),
-                        event.getMultiBufferSource(), event.getPackedLight(), DONALD_TEXTURE, 0.5F);
+        // ハスクの「Donald」をチェック
+        if (entity instanceof Husk husk) {
+            if (husk.hasCustomName() && "Donald".equals(husk.getCustomName().getString())) {
+                renderPlayerModel(husk, event.getPartialTick(), event.getPoseStack(),
+                        event.getMultiBufferSource(), event.getPackedLight(), DONALD_TEXTURE, 0.9F);
             }
         }
-        // エンダーマンの「Minnie」をチェック
-        else if (entity instanceof EnderMan enderman) {
-            if (enderman.hasCustomName() && "Minnie".equals(enderman.getCustomName().getString())) {
-                renderPlayerModel(enderman, event.getPartialTick(), event.getPoseStack(),
+        // ドラウンドの「Minnie」をチェック
+        else if (entity instanceof Drowned drowned) {
+            if (drowned.hasCustomName() && "Minnie".equals(drowned.getCustomName().getString())) {
+                renderPlayerModel(drowned, event.getPartialTick(), event.getPoseStack(),
                         event.getMultiBufferSource(), event.getPackedLight(), MINNIE_TEXTURE, 0.9F);
             }
         }

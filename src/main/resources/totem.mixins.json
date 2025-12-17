@@ -11,10 +11,8 @@
     "GuiMixin",
     "ItemFrameRendererMixin",
     "ZombieRendererMixin",
-    "ChickenRendererMixin",
-    "EndermanRendererMixin",
-    "ChickenModelMixin",
-    "EndermanModelMixin"
+    "DrownedRendererMixin",
+    "HuskRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
