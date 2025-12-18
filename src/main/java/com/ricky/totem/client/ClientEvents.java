@@ -16,6 +16,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.monster.Drowned;
 import net.minecraft.world.entity.monster.Husk;
+import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.api.distmarker.Dist;
@@ -129,6 +130,7 @@ public class ClientEvents extends RenderStateShard {
     private static PlayerModel<LivingEntity> playerModel;
     private static boolean playerModelInitialized = false;
 
+    private static final ResourceLocation MICKY_TEXTURE = new ResourceLocation(TotemItemsMod.MOD_ID, "textures/entity/zombie/micky.png");
     private static final ResourceLocation DONALD_TEXTURE = new ResourceLocation(TotemItemsMod.MOD_ID, "textures/entity/husk/donald.png");
     private static final ResourceLocation MINNIE_TEXTURE = new ResourceLocation(TotemItemsMod.MOD_ID, "textures/entity/drowned/minnie.png");
 
@@ -142,26 +144,39 @@ public class ClientEvents extends RenderStateShard {
     }
 
     /**
-     * 「Donald」という名前のハスクと「Minnie」という名前のドラウンドに
-     * プレイヤーモデルを追加でレンダリング
+     * 「Micky」という名前のゾンビ、「Donald」という名前のハスク、「Minnie」という名前のドラウンドの
+     * 元のレンダリングをキャンセルしてプレイヤーモデルをレンダリング
      */
     @SubscribeEvent
-    public static void onRenderLivingPost(RenderLivingEvent.Post<?, ?> event) {
+    public static void onRenderLivingPre(RenderLivingEvent.Pre<?, ?> event) {
         LivingEntity entity = event.getEntity();
+        ResourceLocation texture = null;
 
         // ハスクの「Donald」をチェック
         if (entity instanceof Husk husk) {
             if (husk.hasCustomName() && "Donald".equals(husk.getCustomName().getString())) {
-                renderPlayerModel(husk, event.getPartialTick(), event.getPoseStack(),
-                        event.getMultiBufferSource(), event.getPackedLight(), DONALD_TEXTURE, 0.9F);
+                texture = DONALD_TEXTURE;
             }
         }
         // ドラウンドの「Minnie」をチェック
         else if (entity instanceof Drowned drowned) {
             if (drowned.hasCustomName() && "Minnie".equals(drowned.getCustomName().getString())) {
-                renderPlayerModel(drowned, event.getPartialTick(), event.getPoseStack(),
-                        event.getMultiBufferSource(), event.getPackedLight(), MINNIE_TEXTURE, 0.9F);
+                texture = MINNIE_TEXTURE;
             }
+        }
+        // ゾンビの「Micky」をチェック（Husk、Drownedは除外済み）
+        else if (entity instanceof Zombie zombie) {
+            if (zombie.hasCustomName() && "Micky".equals(zombie.getCustomName().getString())) {
+                texture = MICKY_TEXTURE;
+            }
+        }
+
+        if (texture != null) {
+            // 元のレンダリングをキャンセル
+            event.setCanceled(true);
+            // プレイヤーモデルをレンダリング
+            renderPlayerModel(entity, event.getPartialTick(), event.getPoseStack(),
+                    event.getMultiBufferSource(), event.getPackedLight(), texture, 0.9375F);
         }
     }
 
@@ -187,6 +202,16 @@ public class ClientEvents extends RenderStateShard {
         playerModel.young = entity.isBaby();
         playerModel.prepareMobModel(entity, limbSwing, limbSwingAmount, partialTicks);
         playerModel.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, headYaw, headPitch);
+
+        // 全パーツを表示（外側レイヤーを含む）
+        playerModel.setAllVisible(true);
+        // 外側レイヤーパーツを明示的に表示
+        playerModel.hat.visible = true;
+        playerModel.jacket.visible = true;
+        playerModel.leftSleeve.visible = true;
+        playerModel.rightSleeve.visible = true;
+        playerModel.leftPants.visible = true;
+        playerModel.rightPants.visible = true;
 
         // レンダリング
         VertexConsumer vertexConsumer = buffer.getBuffer(RenderType.entityCutoutNoCull(texture));
