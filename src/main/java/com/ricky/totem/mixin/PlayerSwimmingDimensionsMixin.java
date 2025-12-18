@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class PlayerSwimmingDimensionsMixin {
 
     // 泳いでいるときのカスタムサイズ
-    private static final float SWIMMING_WIDTH = 0.3F;
+    private static final float SWIMMING_WIDTH = 0.15F;
     private static final float SWIMMING_HEIGHT = 0.15F;
     private static final float SWIMMING_EYE_HEIGHT = 0.075F;
 
