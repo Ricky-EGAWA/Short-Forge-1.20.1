@@ -34,10 +34,10 @@ public abstract class PlayerSwimmingDimensionsMixin {
     }
 
     /**
-     * getEyeHeightメソッドをインターセプトし、
+     * getStandingEyeHeightメソッドをインターセプトし、
      * 泳いでいる状態の目線の高さを変更する
      */
-    @Inject(method = "getEyeHeight", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "getStandingEyeHeight", at = @At("HEAD"), cancellable = true)
     private void modifySwimmingEyeHeight(Pose pose, EntityDimensions dimensions, CallbackInfoReturnable<Float> cir) {
         if (pose == Pose.SWIMMING) {
             // 泳いでいるときの目線を0.075に設定
