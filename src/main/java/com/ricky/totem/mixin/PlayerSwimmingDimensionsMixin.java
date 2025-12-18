@@ -28,8 +28,20 @@ public abstract class PlayerSwimmingDimensionsMixin {
     private void modifySwimmingDimensions(Pose pose, CallbackInfoReturnable<EntityDimensions> cir) {
         if (pose == Pose.SWIMMING) {
             // 大釜の下の隙間を通れるサイズ
-            // 幅0.3、高さ0.15、目線0.075に設定
-            cir.setReturnValue(EntityDimensions.scalable(SWIMMING_WIDTH, SWIMMING_HEIGHT).withEyeHeight(SWIMMING_EYE_HEIGHT));
+            // 幅0.3、高さ0.15に設定
+            cir.setReturnValue(EntityDimensions.scalable(SWIMMING_WIDTH, SWIMMING_HEIGHT));
+        }
+    }
+
+    /**
+     * getEyeHeightメソッドをインターセプトし、
+     * 泳いでいる状態の目線の高さを変更する
+     */
+    @Inject(method = "getEyeHeight", at = @At("HEAD"), cancellable = true)
+    private void modifySwimmingEyeHeight(Pose pose, EntityDimensions dimensions, CallbackInfoReturnable<Float> cir) {
+        if (pose == Pose.SWIMMING) {
+            // 泳いでいるときの目線を0.075に設定
+            cir.setReturnValue(SWIMMING_EYE_HEIGHT);
         }
     }
 }
