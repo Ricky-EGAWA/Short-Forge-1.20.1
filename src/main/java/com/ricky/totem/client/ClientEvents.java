@@ -46,6 +46,24 @@ public class ClientEvents extends RenderStateShard {
                     .createCompositeState(false)
     );
 
+    // エンドポータル用のRenderType（エンティティテクスチャを使用）
+    private static final ResourceLocation END_PORTAL_TEXTURE = new ResourceLocation("minecraft", "textures/entity/end_portal.png");
+    private static final RenderType END_PORTAL_RENDER_TYPE = RenderType.create(
+            "end_portal_map",
+            DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP,
+            VertexFormat.Mode.QUADS,
+            256,
+            false,
+            true,
+            RenderType.CompositeState.builder()
+                    .setShaderState(RENDERTYPE_TEXT_SHADER)
+                    .setTextureState(new TextureStateShard(END_PORTAL_TEXTURE, false, false))
+                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
+                    .setLightmapState(LIGHTMAP)
+                    .setCullState(CULL)
+                    .createCompositeState(false)
+    );
+
     @SubscribeEvent
     public static void onRenderItemInFrame(RenderItemInFrameEvent event) {
         ItemStack stack = event.getItemStack();
@@ -183,7 +201,7 @@ public class ClientEvents extends RenderStateShard {
         }
         // エンドポータルテクスチャの地図かチェック（特別なレンダリング）
         else if (stack.getTag().getBoolean("EndPortalTextured")) {
-            // 開通したエンドポータルの見た目を再現
+            // 開通したエンドポータルの見た目を再現（entity/end_portal.pngを使用）
             event.setCanceled(true);
 
             PoseStack poseStack = event.getPoseStack();
@@ -194,19 +212,8 @@ public class ClientEvents extends RenderStateShard {
             poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
             poseStack.scale(0.0078125F, 0.0078125F, 0.0078125F);
 
-            // 暗い背景（黒曜石）を描画
-            TextureAtlasSprite obsidianSprite = Minecraft.getInstance()
-                .getBlockRenderer()
-                .getBlockModel(Blocks.OBSIDIAN.defaultBlockState())
-                .getParticleIcon();
-            renderBlockTexture(poseStack, bufferSource, combinedLight, obsidianSprite, 5, 10, 15);
-
-            // 泣く黒曜石のテクスチャをシアン/ティール色で重ねて星の模様を作る
-            TextureAtlasSprite cryingObsidianSprite = Minecraft.getInstance()
-                .getBlockRenderer()
-                .getBlockModel(Blocks.CRYING_OBSIDIAN.defaultBlockState())
-                .getParticleIcon();
-            renderOverlayTexture(poseStack, bufferSource, combinedLight, cryingObsidianSprite, 30, 80, 90);
+            // エンドポータルテクスチャを直接描画
+            renderEndPortalTexture(poseStack, bufferSource, combinedLight);
 
             poseStack.popPose();
             return;
@@ -365,6 +372,31 @@ public class ClientEvents extends RenderStateShard {
         float min = -64.0F;
         float max = 64.0F;
         float z = -0.02F;    // 背景より手前に描画
+
+        vertexConsumer.vertex(matrix4f, min, max, z).color(r, g, b, 255).uv(minU, maxV).uv2(combinedLight).endVertex();
+        vertexConsumer.vertex(matrix4f, max, max, z).color(r, g, b, 255).uv(maxU, maxV).uv2(combinedLight).endVertex();
+        vertexConsumer.vertex(matrix4f, max, min, z).color(r, g, b, 255).uv(maxU, minV).uv2(combinedLight).endVertex();
+        vertexConsumer.vertex(matrix4f, min, min, z).color(r, g, b, 255).uv(minU, minV).uv2(combinedLight).endVertex();
+    }
+
+    // エンドポータルテクスチャを描画（entity/end_portal.pngを直接使用）
+    private static void renderEndPortalTexture(PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight) {
+        Matrix4f matrix4f = poseStack.last().pose();
+        VertexConsumer vertexConsumer = bufferSource.getBuffer(END_PORTAL_RENDER_TYPE);
+
+        // テクスチャ全体を使用 (0.0 ~ 1.0)
+        float minU = 0.0F;
+        float maxU = 1.0F;
+        float minV = 0.0F;
+        float maxV = 1.0F;
+
+        // 128x128ピクセルの地図サイズでテクスチャを描画
+        float min = -64.0F;
+        float max = 64.0F;
+        float z = -0.01F;
+
+        // 明るく描画
+        int r = 255, g = 255, b = 255;
 
         vertexConsumer.vertex(matrix4f, min, max, z).color(r, g, b, 255).uv(minU, maxV).uv2(combinedLight).endVertex();
         vertexConsumer.vertex(matrix4f, max, max, z).color(r, g, b, 255).uv(maxU, maxV).uv2(combinedLight).endVertex();
