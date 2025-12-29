@@ -209,6 +209,38 @@ public class ClientEvents extends RenderStateShard {
                 .getBlockModel(Blocks.OBSIDIAN.defaultBlockState())
                 .getParticleIcon();
         }
+        // 石ブロック背景のはしごテクスチャの地図かチェック（特別な2層レンダリング）
+        else if (stack.getTag().getBoolean("StoneLadderTextured")) {
+            // 特別な処理：石の上にはしごを描画
+            event.setCanceled(true);
+
+            PoseStack poseStack = event.getPoseStack();
+            MultiBufferSource bufferSource = event.getMultiBufferSource();
+            int combinedLight = event.getPackedLight();
+
+            poseStack.pushPose();
+            poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
+            poseStack.scale(0.0078125F, 0.0078125F, 0.0078125F);
+
+            // 石のテクスチャを取得
+            TextureAtlasSprite stoneSprite = Minecraft.getInstance()
+                .getBlockRenderer()
+                .getBlockModel(Blocks.STONE.defaultBlockState())
+                .getParticleIcon();
+            // はしごのテクスチャを取得
+            TextureAtlasSprite ladderSprite = Minecraft.getInstance()
+                .getBlockRenderer()
+                .getBlockModel(Blocks.LADDER.defaultBlockState())
+                .getParticleIcon();
+
+            // まず石を背景として描画
+            renderBlockTexture(poseStack, bufferSource, combinedLight, stoneSprite, 148, 148, 148);
+            // その上にはしごを描画（全面サイズ、明るめ）
+            renderOverlayTexture(poseStack, bufferSource, combinedLight, ladderSprite, 230, 230, 230);
+
+            poseStack.popPose();
+            return; // 通常のレンダリング処理をスキップ
+        }
 
         // カスタムテクスチャがある場合はレンダリング
         if (textureSprite != null) {
@@ -289,6 +321,27 @@ public class ClientEvents extends RenderStateShard {
         float min = -32.0F;  // 128 * 8/16 / 2 = 32
         float max = 32.0F;
         float z = -0.02F;    // 外枠より手前に描画
+
+        vertexConsumer.vertex(matrix4f, min, max, z).color(r, g, b, 255).uv(minU, maxV).uv2(combinedLight).endVertex();
+        vertexConsumer.vertex(matrix4f, max, max, z).color(r, g, b, 255).uv(maxU, maxV).uv2(combinedLight).endVertex();
+        vertexConsumer.vertex(matrix4f, max, min, z).color(r, g, b, 255).uv(maxU, minV).uv2(combinedLight).endVertex();
+        vertexConsumer.vertex(matrix4f, min, min, z).color(r, g, b, 255).uv(minU, minV).uv2(combinedLight).endVertex();
+    }
+
+    // オーバーレイテクスチャを描画（はしごなど、全面サイズで石の上に描画）
+    private static void renderOverlayTexture(PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, TextureAtlasSprite textureSprite, int r, int g, int b) {
+        Matrix4f matrix4f = poseStack.last().pose();
+        VertexConsumer vertexConsumer = bufferSource.getBuffer(MAP_TEXTURE_CULLED);
+
+        float minU = textureSprite.getU0();
+        float maxU = textureSprite.getU1();
+        float minV = textureSprite.getV0();
+        float maxV = textureSprite.getV1();
+
+        // 全面サイズで描画
+        float min = -64.0F;
+        float max = 64.0F;
+        float z = -0.02F;    // 背景より手前に描画
 
         vertexConsumer.vertex(matrix4f, min, max, z).color(r, g, b, 255).uv(minU, maxV).uv2(combinedLight).endVertex();
         vertexConsumer.vertex(matrix4f, max, max, z).color(r, g, b, 255).uv(maxU, maxV).uv2(combinedLight).endVertex();

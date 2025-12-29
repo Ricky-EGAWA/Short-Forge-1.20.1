@@ -78,6 +78,7 @@ public abstract class ItemFrameRendererMixin<T extends ItemFrame> {
                tag.getBoolean("EndPortalTextured") ||
                tag.getBoolean("DiamondOreTextured") ||
                tag.getBoolean("DiamondBlockTextured") ||
-               tag.getBoolean("ObsidianTextured");
+               tag.getBoolean("ObsidianTextured") ||
+               tag.getBoolean("StoneLadderTextured");
     }
 }

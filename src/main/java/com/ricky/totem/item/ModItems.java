@@ -86,6 +86,9 @@ public class ModItems {
     public static final RegistryObject<Item> OBSIDIAN_TEXTURED_MAP = ITEMS.register("obsidian_textured_map",
             () -> new ObsidianTexturedMapItem(new Item.Properties().stacksTo(64)));
 
+    public static final RegistryObject<Item> STONE_LADDER_TEXTURED_MAP = ITEMS.register("stone_ladder_textured_map",
+            () -> new StoneLadderTexturedMapItem(new Item.Properties().stacksTo(64)));
+
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);
     }
