@@ -161,8 +161,8 @@ public class ClientEvents extends RenderStateShard {
 
             // まず外枠として全体を描画（半透明の明るい緑）
             renderBlockTexture(poseStack, bufferSource, combinedLight, slimeSprite, 180, 230, 180);
-            // その上に中央に内側コアを描画（6/16サイズ、より濃い緑）
-            renderSlimeCore(poseStack, bufferSource, combinedLight, slimeSprite, 120, 200, 120);
+            // その上に中央に内側コアを描画（8/16サイズ、より明るい緑）
+            renderSlimeCore(poseStack, bufferSource, combinedLight, slimeSprite, 230, 255, 230);
 
             poseStack.popPose();
             return; // 通常のレンダリング処理をスキップ
@@ -275,7 +275,7 @@ public class ClientEvents extends RenderStateShard {
         vertexConsumer.vertex(matrix4f, min, min, z).color(r, g, b, 255).uv(minU, minV).uv2(combinedLight).endVertex();
     }
 
-    // スライムブロックの内側コアを描画（6/16サイズ）
+    // スライムブロックの内側コアを描画（8/16サイズ）
     private static void renderSlimeCore(PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, TextureAtlasSprite textureSprite, int r, int g, int b) {
         Matrix4f matrix4f = poseStack.last().pose();
         VertexConsumer vertexConsumer = bufferSource.getBuffer(MAP_TEXTURE_CULLED);
@@ -285,9 +285,9 @@ public class ClientEvents extends RenderStateShard {
         float minV = textureSprite.getV0();
         float maxV = textureSprite.getV1();
 
-        // 中央に描画（6/16サイズ = 48ピクセル幅）
-        float min = -24.0F;  // 128 * 6/16 / 2 = 24
-        float max = 24.0F;
+        // 中央に描画（8/16サイズ = 64ピクセル幅）
+        float min = -32.0F;  // 128 * 8/16 / 2 = 32
+        float max = 32.0F;
         float z = -0.02F;    // 外枠より手前に描画
 
         vertexConsumer.vertex(matrix4f, min, max, z).color(r, g, b, 255).uv(minU, maxV).uv2(combinedLight).endVertex();
