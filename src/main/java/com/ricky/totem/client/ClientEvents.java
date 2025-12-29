@@ -151,14 +151,14 @@ public class ClientEvents extends RenderStateShard {
         else if (stack.getTag().getBoolean("BlackTextured")) {
             textureSprite = Minecraft.getInstance()
                 .getBlockRenderer()
-                .getBlockModel(Blocks.BLACK_WOOL.defaultBlockState())
+                .getBlockModel(Blocks.BLACK_CONCRETE.defaultBlockState())
                 .getParticleIcon();
         }
         // ネザーポータルテクスチャの地図かチェック
         else if (stack.getTag().getBoolean("NetherPortalTextured")) {
             textureSprite = Minecraft.getInstance()
                 .getBlockRenderer()
-                .getBlockModel(Blocks.PURPLE_STAINED_GLASS.defaultBlockState())
+                .getBlockModel(Blocks.NETHER_PORTAL.defaultBlockState())
                 .getParticleIcon();
         }
         // エンドポータルテクスチャの地図かチェック
