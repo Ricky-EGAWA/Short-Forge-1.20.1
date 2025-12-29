@@ -1,4 +1,4 @@
-package com.ricky.totem.item;
+package com.ricky.totem.item.mapitem;
 
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;

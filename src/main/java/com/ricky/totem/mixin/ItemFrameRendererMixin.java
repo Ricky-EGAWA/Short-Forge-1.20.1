@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.entity.ItemFrameRenderer;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.MapItem;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -32,9 +33,14 @@ public abstract class ItemFrameRendererMixin<T extends ItemFrame> {
                           MultiBufferSource buffer, int packedLight, CallbackInfo ci) {
         ItemStack stack = itemFrame.getItem();
 
-        // 石テクスチャまたはネザーラックテクスチャの地図かチェック
-        if (stack.hasTag() &&
-                (stack.getTag().getBoolean("StoneTextured") || stack.getTag().getBoolean("NetherrackTextured"))) {
+        // テクスチャ地図かチェック（すべてのテクスチャ地図タグを確認）
+        if (stack.hasTag() && isTexturedMap(stack)) {
+
+            // 地図IDが存在しない場合はレンダリングをキャンセル（クラッシュ防止）
+            if (!MapItem.getMapId(stack).isPresent()) {
+                ci.cancel();
+                return;
+            }
 
             // カメラの位置を取得
             Vec3 cameraPos = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
@@ -57,5 +63,28 @@ public abstract class ItemFrameRendererMixin<T extends ItemFrame> {
                 ci.cancel();
             }
         }
+    }
+
+    /**
+     * スタックがテクスチャ地図かどうかをチェック
+     */
+    private boolean isTexturedMap(ItemStack stack) {
+        if (!stack.hasTag()) return false;
+        var tag = stack.getTag();
+        return tag.getBoolean("StoneTextured") ||
+               tag.getBoolean("NetherrackTextured") ||
+               tag.getBoolean("GrassTextured") ||
+               tag.getBoolean("LavaTextured") ||
+               tag.getBoolean("WaterTextured") ||
+               tag.getBoolean("OakPlanksTextured") ||
+               tag.getBoolean("SandstonePressurePlateTextured") ||
+               tag.getBoolean("TntSideTextured") ||
+               tag.getBoolean("SlimeTextured") ||
+               tag.getBoolean("BlackTextured") ||
+               tag.getBoolean("NetherPortalTextured") ||
+               tag.getBoolean("EndPortalTextured") ||
+               tag.getBoolean("DiamondOreTextured") ||
+               tag.getBoolean("DiamondBlockTextured") ||
+               tag.getBoolean("ObsidianTextured");
     }
 }

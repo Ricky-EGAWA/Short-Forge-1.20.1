@@ -1,4 +1,4 @@
-package com.ricky.totem.item;
+package com.ricky.totem.item.mapitem;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;

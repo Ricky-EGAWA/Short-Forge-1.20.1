@@ -1,6 +1,7 @@
 package com.ricky.totem.item;
 
 import com.ricky.totem.TotemItemsMod;
+import com.ricky.totem.item.mapitem.*;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.*;
 import net.minecraft.world.level.material.Fluids;
