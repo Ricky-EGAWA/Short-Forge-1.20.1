@@ -55,6 +55,7 @@ public class ModCreativeModTabs {
                         pOutput.accept(ModItems.DIAMOND_ORE_TEXTURED_MAP.get());
                         pOutput.accept(ModItems.DIAMOND_BLOCK_TEXTURED_MAP.get());
                         pOutput.accept(ModItems.OBSIDIAN_TEXTURED_MAP.get());
+                        pOutput.accept(ModItems.STONE_LADDER_TEXTURED_MAP.get());
                     })
                     .build());
 
