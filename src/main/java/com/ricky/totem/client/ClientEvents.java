@@ -126,9 +126,9 @@ public class ClientEvents extends RenderStateShard {
                 .getParticleIcon();
 
             // まず砂岩を背景として描画（明るめに）
-            renderBlockTexture(poseStack, bufferSource, combinedLight, sandstoneSprite, 200, 200, 200);
+            renderBlockTexture(poseStack, bufferSource, combinedLight, sandstoneSprite, 230, 230, 230);
             // その上に中央に石の感圧版を描画（14/16サイズ）
-            renderCenteredTexture(poseStack, bufferSource, combinedLight, pressurePlateSprite, 200, 200, 200);
+            renderCenteredTexture(poseStack, bufferSource, combinedLight, pressurePlateSprite, 230, 230, 230);
 
             poseStack.popPose();
             return; // 通常のレンダリング処理をスキップ
@@ -140,12 +140,32 @@ public class ClientEvents extends RenderStateShard {
                 .getBlockModel(Blocks.TNT.defaultBlockState())
                 .getParticleIcon();
         }
-        // スライムブロックテクスチャの地図かチェック
+        // スライムブロックテクスチャの地図かチェック（特別な2層レンダリング）
         else if (stack.getTag().getBoolean("SlimeTextured")) {
-            textureSprite = Minecraft.getInstance()
+            // 特別な処理：外枠と内側コアを描画
+            event.setCanceled(true);
+
+            PoseStack poseStack = event.getPoseStack();
+            MultiBufferSource bufferSource = event.getMultiBufferSource();
+            int combinedLight = event.getPackedLight();
+
+            poseStack.pushPose();
+            poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
+            poseStack.scale(0.0078125F, 0.0078125F, 0.0078125F);
+
+            // スライムブロックのテクスチャを取得
+            TextureAtlasSprite slimeSprite = Minecraft.getInstance()
                 .getBlockRenderer()
                 .getBlockModel(Blocks.SLIME_BLOCK.defaultBlockState())
                 .getParticleIcon();
+
+            // まず外枠として全体を描画（半透明の明るい緑）
+            renderBlockTexture(poseStack, bufferSource, combinedLight, slimeSprite, 180, 230, 180);
+            // その上に中央に内側コアを描画（6/16サイズ、より濃い緑）
+            renderSlimeCore(poseStack, bufferSource, combinedLight, slimeSprite, 120, 200, 120);
+
+            poseStack.popPose();
+            return; // 通常のレンダリング処理をスキップ
         }
         // 黒テクスチャの地図かチェック
         else if (stack.getTag().getBoolean("BlackTextured")) {
@@ -248,6 +268,27 @@ public class ClientEvents extends RenderStateShard {
         float min = -56.0F;  // 128 * 14/16 / 2 = 56
         float max = 56.0F;
         float z = -0.02F;    // 砂岩より手前に描画
+
+        vertexConsumer.vertex(matrix4f, min, max, z).color(r, g, b, 255).uv(minU, maxV).uv2(combinedLight).endVertex();
+        vertexConsumer.vertex(matrix4f, max, max, z).color(r, g, b, 255).uv(maxU, maxV).uv2(combinedLight).endVertex();
+        vertexConsumer.vertex(matrix4f, max, min, z).color(r, g, b, 255).uv(maxU, minV).uv2(combinedLight).endVertex();
+        vertexConsumer.vertex(matrix4f, min, min, z).color(r, g, b, 255).uv(minU, minV).uv2(combinedLight).endVertex();
+    }
+
+    // スライムブロックの内側コアを描画（6/16サイズ）
+    private static void renderSlimeCore(PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, TextureAtlasSprite textureSprite, int r, int g, int b) {
+        Matrix4f matrix4f = poseStack.last().pose();
+        VertexConsumer vertexConsumer = bufferSource.getBuffer(MAP_TEXTURE_CULLED);
+
+        float minU = textureSprite.getU0();
+        float maxU = textureSprite.getU1();
+        float minV = textureSprite.getV0();
+        float maxV = textureSprite.getV1();
+
+        // 中央に描画（6/16サイズ = 48ピクセル幅）
+        float min = -24.0F;  // 128 * 6/16 / 2 = 24
+        float max = 24.0F;
+        float z = -0.02F;    // 外枠より手前に描画
 
         vertexConsumer.vertex(matrix4f, min, max, z).color(r, g, b, 255).uv(minU, maxV).uv2(combinedLight).endVertex();
         vertexConsumer.vertex(matrix4f, max, max, z).color(r, g, b, 255).uv(maxU, maxV).uv2(combinedLight).endVertex();
