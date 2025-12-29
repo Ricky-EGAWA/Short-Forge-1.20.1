@@ -69,6 +69,97 @@ public class ClientEvents extends RenderStateShard {
                 .getBlockModel(Blocks.NETHERRACK.defaultBlockState())
                 .getParticleIcon();
         }
+        // 草ブロックテクスチャの地図かチェック
+        else if (stack.getTag().getBoolean("GrassTextured")) {
+            textureSprite = Minecraft.getInstance()
+                .getBlockRenderer()
+                .getBlockModel(Blocks.GRASS_BLOCK.defaultBlockState())
+                .getParticleIcon();
+        }
+        // 溶岩テクスチャの地図かチェック
+        else if (stack.getTag().getBoolean("LavaTextured")) {
+            textureSprite = Minecraft.getInstance()
+                .getBlockRenderer()
+                .getBlockModel(Blocks.LAVA.defaultBlockState())
+                .getParticleIcon();
+        }
+        // 水テクスチャの地図かチェック
+        else if (stack.getTag().getBoolean("WaterTextured")) {
+            textureSprite = Minecraft.getInstance()
+                .getBlockRenderer()
+                .getBlockModel(Blocks.WATER.defaultBlockState())
+                .getParticleIcon();
+        }
+        // オークの板材テクスチャの地図かチェック
+        else if (stack.getTag().getBoolean("OakPlanksTextured")) {
+            textureSprite = Minecraft.getInstance()
+                .getBlockRenderer()
+                .getBlockModel(Blocks.OAK_PLANKS.defaultBlockState())
+                .getParticleIcon();
+        }
+        // 砂岩背景の石の感圧版テクスチャの地図かチェック
+        else if (stack.getTag().getBoolean("SandstonePressurePlateTextured")) {
+            textureSprite = Minecraft.getInstance()
+                .getBlockRenderer()
+                .getBlockModel(Blocks.STONE_PRESSURE_PLATE.defaultBlockState())
+                .getParticleIcon();
+        }
+        // TNT側面テクスチャの地図かチェック
+        else if (stack.getTag().getBoolean("TntSideTextured")) {
+            textureSprite = Minecraft.getInstance()
+                .getBlockRenderer()
+                .getBlockModel(Blocks.TNT.defaultBlockState())
+                .getParticleIcon();
+        }
+        // スライムブロックテクスチャの地図かチェック
+        else if (stack.getTag().getBoolean("SlimeTextured")) {
+            textureSprite = Minecraft.getInstance()
+                .getBlockRenderer()
+                .getBlockModel(Blocks.SLIME_BLOCK.defaultBlockState())
+                .getParticleIcon();
+        }
+        // 黒テクスチャの地図かチェック
+        else if (stack.getTag().getBoolean("BlackTextured")) {
+            textureSprite = Minecraft.getInstance()
+                .getBlockRenderer()
+                .getBlockModel(Blocks.BLACK_WOOL.defaultBlockState())
+                .getParticleIcon();
+        }
+        // ネザーポータルテクスチャの地図かチェック
+        else if (stack.getTag().getBoolean("NetherPortalTextured")) {
+            textureSprite = Minecraft.getInstance()
+                .getBlockRenderer()
+                .getBlockModel(Blocks.PURPLE_STAINED_GLASS.defaultBlockState())
+                .getParticleIcon();
+        }
+        // エンドポータルテクスチャの地図かチェック
+        else if (stack.getTag().getBoolean("EndPortalTextured")) {
+            textureSprite = Minecraft.getInstance()
+                .getBlockRenderer()
+                .getBlockModel(Blocks.BLACK_CONCRETE.defaultBlockState())
+                .getParticleIcon();
+        }
+        // ダイヤモンド鉱石テクスチャの地図かチェック
+        else if (stack.getTag().getBoolean("DiamondOreTextured")) {
+            textureSprite = Minecraft.getInstance()
+                .getBlockRenderer()
+                .getBlockModel(Blocks.DIAMOND_ORE.defaultBlockState())
+                .getParticleIcon();
+        }
+        // ダイヤモンドブロックテクスチャの地図かチェック
+        else if (stack.getTag().getBoolean("DiamondBlockTextured")) {
+            textureSprite = Minecraft.getInstance()
+                .getBlockRenderer()
+                .getBlockModel(Blocks.DIAMOND_BLOCK.defaultBlockState())
+                .getParticleIcon();
+        }
+        // 黒曜石テクスチャの地図かチェック
+        else if (stack.getTag().getBoolean("ObsidianTextured")) {
+            textureSprite = Minecraft.getInstance()
+                .getBlockRenderer()
+                .getBlockModel(Blocks.OBSIDIAN.defaultBlockState())
+                .getParticleIcon();
+        }
 
         // カスタムテクスチャがある場合はレンダリング
         if (textureSprite != null) {
