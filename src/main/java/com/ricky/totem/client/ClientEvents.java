@@ -9,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.api.distmarker.Dist;
@@ -54,6 +55,7 @@ public class ClientEvents extends RenderStateShard {
         }
 
         TextureAtlasSprite textureSprite = null;
+        int colorR = 148, colorG = 148, colorB = 148; // デフォルトの暗さ
 
         // 石テクスチャの地図かチェック
         if (stack.getTag().getBoolean("StoneTextured")) {
@@ -69,26 +71,29 @@ public class ClientEvents extends RenderStateShard {
                 .getBlockModel(Blocks.NETHERRACK.defaultBlockState())
                 .getParticleIcon();
         }
-        // 草ブロックテクスチャの地図かチェック
+        // 草ブロックテクスチャの地図かチェック（上面テクスチャを直接取得）
         else if (stack.getTag().getBoolean("GrassTextured")) {
             textureSprite = Minecraft.getInstance()
-                .getBlockRenderer()
-                .getBlockModel(Blocks.GRASS_BLOCK.defaultBlockState())
-                .getParticleIcon();
+                .getTextureAtlas(InventoryMenu.BLOCK_ATLAS)
+                .apply(new ResourceLocation("minecraft", "block/grass_block_top"));
+            // 草の緑色のティント
+            colorR = 100; colorG = 148; colorB = 80;
         }
-        // 溶岩テクスチャの地図かチェック
+        // 溶岩テクスチャの地図かチェック（明るくする）
         else if (stack.getTag().getBoolean("LavaTextured")) {
             textureSprite = Minecraft.getInstance()
-                .getBlockRenderer()
-                .getBlockModel(Blocks.LAVA.defaultBlockState())
-                .getParticleIcon();
+                .getTextureAtlas(InventoryMenu.BLOCK_ATLAS)
+                .apply(new ResourceLocation("minecraft", "block/lava_still"));
+            // 溶岩は明るく
+            colorR = 255; colorG = 255; colorB = 255;
         }
-        // 水テクスチャの地図かチェック
+        // 水テクスチャの地図かチェック（青色ティント）
         else if (stack.getTag().getBoolean("WaterTextured")) {
             textureSprite = Minecraft.getInstance()
-                .getBlockRenderer()
-                .getBlockModel(Blocks.WATER.defaultBlockState())
-                .getParticleIcon();
+                .getTextureAtlas(InventoryMenu.BLOCK_ATLAS)
+                .apply(new ResourceLocation("minecraft", "block/water_still"));
+            // 平原の水の青色ティント
+            colorR = 63; colorG = 118; colorB = 228;
         }
         // オークの板材テクスチャの地図かチェック
         else if (stack.getTag().getBoolean("OakPlanksTextured")) {
@@ -177,13 +182,13 @@ public class ClientEvents extends RenderStateShard {
             poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
             poseStack.scale(0.0078125F, 0.0078125F, 0.0078125F); // 128分の1（地図サイズ）
 
-            renderBlockTexture(poseStack, bufferSource, combinedLight, textureSprite);
+            renderBlockTexture(poseStack, bufferSource, combinedLight, textureSprite, colorR, colorG, colorB);
 
             poseStack.popPose();
         }
     }
 
-    private static void renderBlockTexture(PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, TextureAtlasSprite textureSprite) {
+    private static void renderBlockTexture(PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, TextureAtlasSprite textureSprite, int r, int g, int b) {
         Matrix4f matrix4f = poseStack.last().pose();
         // カリングを有効にしたカスタムRenderTypeを使用（裏側から見ると透明になる）
         VertexConsumer vertexConsumer = bufferSource.getBuffer(MAP_TEXTURE_CULLED);
@@ -198,13 +203,10 @@ public class ClientEvents extends RenderStateShard {
         float max = 64.0F;
         float z = -0.01F;
 
-        // 暗い色で描画（128/255 = 約50%の明るさ）
-        int darkness = 148;
-
         // 4つの頂点で四角形を描画（地図と同じサイズ）
-        vertexConsumer.vertex(matrix4f, min, max, z).color(darkness, darkness, darkness, 255).uv(minU, maxV).uv2(combinedLight).endVertex();
-        vertexConsumer.vertex(matrix4f, max, max, z).color(darkness, darkness, darkness, 255).uv(maxU, maxV).uv2(combinedLight).endVertex();
-        vertexConsumer.vertex(matrix4f, max, min, z).color(darkness, darkness, darkness, 255).uv(maxU, minV).uv2(combinedLight).endVertex();
-        vertexConsumer.vertex(matrix4f, min, min, z).color(darkness, darkness, darkness, 255).uv(minU, minV).uv2(combinedLight).endVertex();
+        vertexConsumer.vertex(matrix4f, min, max, z).color(r, g, b, 255).uv(minU, maxV).uv2(combinedLight).endVertex();
+        vertexConsumer.vertex(matrix4f, max, max, z).color(r, g, b, 255).uv(maxU, maxV).uv2(combinedLight).endVertex();
+        vertexConsumer.vertex(matrix4f, max, min, z).color(r, g, b, 255).uv(maxU, minV).uv2(combinedLight).endVertex();
+        vertexConsumer.vertex(matrix4f, min, min, z).color(r, g, b, 255).uv(minU, minV).uv2(combinedLight).endVertex();
     }
 }
