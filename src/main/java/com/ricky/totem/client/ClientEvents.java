@@ -181,12 +181,35 @@ public class ClientEvents extends RenderStateShard {
                 .getBlockModel(Blocks.NETHER_PORTAL.defaultBlockState())
                 .getParticleIcon();
         }
-        // エンドポータルテクスチャの地図かチェック
+        // エンドポータルテクスチャの地図かチェック（特別なレンダリング）
         else if (stack.getTag().getBoolean("EndPortalTextured")) {
-            textureSprite = Minecraft.getInstance()
+            // エンドポータルの見た目を再現
+            event.setCanceled(true);
+
+            PoseStack poseStack = event.getPoseStack();
+            MultiBufferSource bufferSource = event.getMultiBufferSource();
+            int combinedLight = event.getPackedLight();
+
+            poseStack.pushPose();
+            poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
+            poseStack.scale(0.0078125F, 0.0078125F, 0.0078125F);
+
+            // 黒背景を描画
+            TextureAtlasSprite blackSprite = Minecraft.getInstance()
                 .getBlockRenderer()
                 .getBlockModel(Blocks.BLACK_CONCRETE.defaultBlockState())
                 .getParticleIcon();
+            renderBlockTexture(poseStack, bufferSource, combinedLight, blackSprite, 10, 10, 20);
+
+            // エンドストーンのテクスチャを暗い青/紫で重ねて星空風の模様を作る
+            TextureAtlasSprite endStoneSprite = Minecraft.getInstance()
+                .getBlockRenderer()
+                .getBlockModel(Blocks.END_STONE.defaultBlockState())
+                .getParticleIcon();
+            renderOverlayTexture(poseStack, bufferSource, combinedLight, endStoneSprite, 20, 40, 60);
+
+            poseStack.popPose();
+            return;
         }
         // ダイヤモンド鉱石テクスチャの地図かチェック
         else if (stack.getTag().getBoolean("DiamondOreTextured")) {
