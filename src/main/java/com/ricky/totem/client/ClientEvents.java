@@ -125,10 +125,10 @@ public class ClientEvents extends RenderStateShard {
                 .getBlockModel(Blocks.STONE_PRESSURE_PLATE.defaultBlockState())
                 .getParticleIcon();
 
-            // まず砂岩を背景として描画
-            renderBlockTexture(poseStack, bufferSource, combinedLight, sandstoneSprite, 148, 148, 148);
-            // その上に中央に石の感圧版を小さく描画
-            renderCenteredTexture(poseStack, bufferSource, combinedLight, pressurePlateSprite, 148, 148, 148);
+            // まず砂岩を背景として描画（明るめに）
+            renderBlockTexture(poseStack, bufferSource, combinedLight, sandstoneSprite, 200, 200, 200);
+            // その上に中央に石の感圧版を描画（14/16サイズ）
+            renderCenteredTexture(poseStack, bufferSource, combinedLight, pressurePlateSprite, 200, 200, 200);
 
             poseStack.popPose();
             return; // 通常のレンダリング処理をスキップ
@@ -244,9 +244,9 @@ public class ClientEvents extends RenderStateShard {
         float minV = textureSprite.getV0();
         float maxV = textureSprite.getV1();
 
-        // 中央に小さく描画（感圧版のサイズ感を再現）
-        float min = -32.0F;  // 中央に寄せる
-        float max = 32.0F;
+        // 中央に描画（14/16サイズ = 112ピクセル幅）
+        float min = -56.0F;  // 128 * 14/16 / 2 = 56
+        float max = 56.0F;
         float z = -0.02F;    // 砂岩より手前に描画
 
         vertexConsumer.vertex(matrix4f, min, max, z).color(r, g, b, 255).uv(minU, maxV).uv2(combinedLight).endVertex();
