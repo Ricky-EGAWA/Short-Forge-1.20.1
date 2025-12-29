@@ -3,6 +3,7 @@ package com.ricky.totem.item.mapitem;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.MapItem;
@@ -45,6 +46,15 @@ public abstract class AbstractTexturedMapItem extends MapItem {
         if (!level.isClientSide) {
             createMapData(stack, level);
         }
+    }
+
+    @Override
+    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
+        // 地図IDがない場合は作成（クリエイティブモードで取得したアイテム用）
+        if (!level.isClientSide && (!stack.hasTag() || !stack.getTag().contains("map"))) {
+            createMapData(stack, level);
+        }
+        super.inventoryTick(stack, level, entity, slotId, isSelected);
     }
 
     private void createMapData(ItemStack stack, Level level) {

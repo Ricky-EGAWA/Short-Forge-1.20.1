@@ -7,7 +7,6 @@ import net.minecraft.client.renderer.entity.ItemFrameRenderer;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.decoration.ItemFrame;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.MapItem;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -35,12 +34,6 @@ public abstract class ItemFrameRendererMixin<T extends ItemFrame> {
 
         // テクスチャ地図かチェック（すべてのテクスチャ地図タグを確認）
         if (stack.hasTag() && isTexturedMap(stack)) {
-
-            // 地図IDが存在しない場合はレンダリングをキャンセル（クラッシュ防止）
-            if (!MapItem.getMapId(stack).isPresent()) {
-                ci.cancel();
-                return;
-            }
 
             // カメラの位置を取得
             Vec3 cameraPos = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
