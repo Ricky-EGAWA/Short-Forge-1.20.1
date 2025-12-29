@@ -183,7 +183,7 @@ public class ClientEvents extends RenderStateShard {
         }
         // エンドポータルテクスチャの地図かチェック（特別なレンダリング）
         else if (stack.getTag().getBoolean("EndPortalTextured")) {
-            // エンドポータルの見た目を再現
+            // 開通したエンドポータルの見た目を再現
             event.setCanceled(true);
 
             PoseStack poseStack = event.getPoseStack();
@@ -194,19 +194,19 @@ public class ClientEvents extends RenderStateShard {
             poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
             poseStack.scale(0.0078125F, 0.0078125F, 0.0078125F);
 
-            // 黒背景を描画
-            TextureAtlasSprite blackSprite = Minecraft.getInstance()
+            // 暗い背景（黒曜石）を描画
+            TextureAtlasSprite obsidianSprite = Minecraft.getInstance()
                 .getBlockRenderer()
-                .getBlockModel(Blocks.BLACK_CONCRETE.defaultBlockState())
+                .getBlockModel(Blocks.OBSIDIAN.defaultBlockState())
                 .getParticleIcon();
-            renderBlockTexture(poseStack, bufferSource, combinedLight, blackSprite, 10, 10, 20);
+            renderBlockTexture(poseStack, bufferSource, combinedLight, obsidianSprite, 5, 10, 15);
 
-            // エンドストーンのテクスチャを暗い青/紫で重ねて星空風の模様を作る
-            TextureAtlasSprite endStoneSprite = Minecraft.getInstance()
+            // 泣く黒曜石のテクスチャをシアン/ティール色で重ねて星の模様を作る
+            TextureAtlasSprite cryingObsidianSprite = Minecraft.getInstance()
                 .getBlockRenderer()
-                .getBlockModel(Blocks.END_STONE.defaultBlockState())
+                .getBlockModel(Blocks.CRYING_OBSIDIAN.defaultBlockState())
                 .getParticleIcon();
-            renderOverlayTexture(poseStack, bufferSource, combinedLight, endStoneSprite, 20, 40, 60);
+            renderOverlayTexture(poseStack, bufferSource, combinedLight, cryingObsidianSprite, 30, 80, 90);
 
             poseStack.popPose();
             return;
