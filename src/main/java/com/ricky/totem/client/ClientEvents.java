@@ -102,12 +102,36 @@ public class ClientEvents extends RenderStateShard {
                 .getBlockModel(Blocks.OAK_PLANKS.defaultBlockState())
                 .getParticleIcon();
         }
-        // 砂岩背景の石の感圧版テクスチャの地図かチェック
+        // 砂岩背景の石の感圧版テクスチャの地図かチェック（特別な2層レンダリング）
         else if (stack.getTag().getBoolean("SandstonePressurePlateTextured")) {
-            textureSprite = Minecraft.getInstance()
+            // 特別な処理：砂岩の上に石の感圧版を描画
+            event.setCanceled(true);
+
+            PoseStack poseStack = event.getPoseStack();
+            MultiBufferSource bufferSource = event.getMultiBufferSource();
+            int combinedLight = event.getPackedLight();
+
+            poseStack.pushPose();
+            poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
+            poseStack.scale(0.0078125F, 0.0078125F, 0.0078125F);
+
+            // 砂岩のテクスチャを取得
+            TextureAtlasSprite sandstoneSprite = Minecraft.getInstance()
+                .getTextureAtlas(InventoryMenu.BLOCK_ATLAS)
+                .apply(new ResourceLocation("minecraft", "block/sandstone_top"));
+            // 石の感圧版のテクスチャを取得
+            TextureAtlasSprite pressurePlateSprite = Minecraft.getInstance()
                 .getBlockRenderer()
                 .getBlockModel(Blocks.STONE_PRESSURE_PLATE.defaultBlockState())
                 .getParticleIcon();
+
+            // まず砂岩を背景として描画
+            renderBlockTexture(poseStack, bufferSource, combinedLight, sandstoneSprite, 148, 148, 148);
+            // その上に中央に石の感圧版を小さく描画
+            renderCenteredTexture(poseStack, bufferSource, combinedLight, pressurePlateSprite, 148, 148, 148);
+
+            poseStack.popPose();
+            return; // 通常のレンダリング処理をスキップ
         }
         // TNT側面テクスチャの地図かチェック
         else if (stack.getTag().getBoolean("TntSideTextured")) {
@@ -204,6 +228,27 @@ public class ClientEvents extends RenderStateShard {
         float z = -0.01F;
 
         // 4つの頂点で四角形を描画（地図と同じサイズ）
+        vertexConsumer.vertex(matrix4f, min, max, z).color(r, g, b, 255).uv(minU, maxV).uv2(combinedLight).endVertex();
+        vertexConsumer.vertex(matrix4f, max, max, z).color(r, g, b, 255).uv(maxU, maxV).uv2(combinedLight).endVertex();
+        vertexConsumer.vertex(matrix4f, max, min, z).color(r, g, b, 255).uv(maxU, minV).uv2(combinedLight).endVertex();
+        vertexConsumer.vertex(matrix4f, min, min, z).color(r, g, b, 255).uv(minU, minV).uv2(combinedLight).endVertex();
+    }
+
+    // 中央に小さくテクスチャを描画（砂岩背景の石の感圧版用）
+    private static void renderCenteredTexture(PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, TextureAtlasSprite textureSprite, int r, int g, int b) {
+        Matrix4f matrix4f = poseStack.last().pose();
+        VertexConsumer vertexConsumer = bufferSource.getBuffer(MAP_TEXTURE_CULLED);
+
+        float minU = textureSprite.getU0();
+        float maxU = textureSprite.getU1();
+        float minV = textureSprite.getV0();
+        float maxV = textureSprite.getV1();
+
+        // 中央に小さく描画（感圧版のサイズ感を再現）
+        float min = -32.0F;  // 中央に寄せる
+        float max = 32.0F;
+        float z = -0.02F;    // 砂岩より手前に描画
+
         vertexConsumer.vertex(matrix4f, min, max, z).color(r, g, b, 255).uv(minU, maxV).uv2(combinedLight).endVertex();
         vertexConsumer.vertex(matrix4f, max, max, z).color(r, g, b, 255).uv(maxU, maxV).uv2(combinedLight).endVertex();
         vertexConsumer.vertex(matrix4f, max, min, z).color(r, g, b, 255).uv(maxU, minV).uv2(combinedLight).endVertex();
