@@ -46,6 +46,45 @@ public class ModItems {
     public static final RegistryObject<Item> NETHERRACK_TEXTURED_MAP = ITEMS.register("netherrack_textured_map",
             () -> new NetherrackTexturedMapItem(new Item.Properties().stacksTo(64)));
 
+    public static final RegistryObject<Item> GRASS_TEXTURED_MAP = ITEMS.register("grass_textured_map",
+            () -> new GrassTexturedMapItem(new Item.Properties().stacksTo(64)));
+
+    public static final RegistryObject<Item> LAVA_TEXTURED_MAP = ITEMS.register("lava_textured_map",
+            () -> new LavaTexturedMapItem(new Item.Properties().stacksTo(64)));
+
+    public static final RegistryObject<Item> WATER_TEXTURED_MAP = ITEMS.register("water_textured_map",
+            () -> new WaterTexturedMapItem(new Item.Properties().stacksTo(64)));
+
+    public static final RegistryObject<Item> OAK_PLANKS_TEXTURED_MAP = ITEMS.register("oak_planks_textured_map",
+            () -> new OakPlanksTexturedMapItem(new Item.Properties().stacksTo(64)));
+
+    public static final RegistryObject<Item> SANDSTONE_PRESSURE_PLATE_TEXTURED_MAP = ITEMS.register("sandstone_pressure_plate_textured_map",
+            () -> new SandstonePressurePlateTexturedMapItem(new Item.Properties().stacksTo(64)));
+
+    public static final RegistryObject<Item> TNT_SIDE_TEXTURED_MAP = ITEMS.register("tnt_side_textured_map",
+            () -> new TntSideTexturedMapItem(new Item.Properties().stacksTo(64)));
+
+    public static final RegistryObject<Item> SLIME_TEXTURED_MAP = ITEMS.register("slime_textured_map",
+            () -> new SlimeTexturedMapItem(new Item.Properties().stacksTo(64)));
+
+    public static final RegistryObject<Item> BLACK_TEXTURED_MAP = ITEMS.register("black_textured_map",
+            () -> new BlackTexturedMapItem(new Item.Properties().stacksTo(64)));
+
+    public static final RegistryObject<Item> NETHER_PORTAL_TEXTURED_MAP = ITEMS.register("nether_portal_textured_map",
+            () -> new NetherPortalTexturedMapItem(new Item.Properties().stacksTo(64)));
+
+    public static final RegistryObject<Item> END_PORTAL_TEXTURED_MAP = ITEMS.register("end_portal_textured_map",
+            () -> new EndPortalTexturedMapItem(new Item.Properties().stacksTo(64)));
+
+    public static final RegistryObject<Item> DIAMOND_ORE_TEXTURED_MAP = ITEMS.register("diamond_ore_textured_map",
+            () -> new DiamondOreTexturedMapItem(new Item.Properties().stacksTo(64)));
+
+    public static final RegistryObject<Item> DIAMOND_BLOCK_TEXTURED_MAP = ITEMS.register("diamond_block_textured_map",
+            () -> new DiamondBlockTexturedMapItem(new Item.Properties().stacksTo(64)));
+
+    public static final RegistryObject<Item> OBSIDIAN_TEXTURED_MAP = ITEMS.register("obsidian_textured_map",
+            () -> new ObsidianTexturedMapItem(new Item.Properties().stacksTo(64)));
+
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);
     }

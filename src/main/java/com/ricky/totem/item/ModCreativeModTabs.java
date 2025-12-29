@@ -42,6 +42,19 @@ public class ModCreativeModTabs {
                     .displayItems((pParameters, pOutput) -> {
                         pOutput.accept(ModItems.STONE_TEXTURED_MAP.get());
                         pOutput.accept(ModItems.NETHERRACK_TEXTURED_MAP.get());
+                        pOutput.accept(ModItems.GRASS_TEXTURED_MAP.get());
+                        pOutput.accept(ModItems.LAVA_TEXTURED_MAP.get());
+                        pOutput.accept(ModItems.WATER_TEXTURED_MAP.get());
+                        pOutput.accept(ModItems.OAK_PLANKS_TEXTURED_MAP.get());
+                        pOutput.accept(ModItems.SANDSTONE_PRESSURE_PLATE_TEXTURED_MAP.get());
+                        pOutput.accept(ModItems.TNT_SIDE_TEXTURED_MAP.get());
+                        pOutput.accept(ModItems.SLIME_TEXTURED_MAP.get());
+                        pOutput.accept(ModItems.BLACK_TEXTURED_MAP.get());
+                        pOutput.accept(ModItems.NETHER_PORTAL_TEXTURED_MAP.get());
+                        pOutput.accept(ModItems.END_PORTAL_TEXTURED_MAP.get());
+                        pOutput.accept(ModItems.DIAMOND_ORE_TEXTURED_MAP.get());
+                        pOutput.accept(ModItems.DIAMOND_BLOCK_TEXTURED_MAP.get());
+                        pOutput.accept(ModItems.OBSIDIAN_TEXTURED_MAP.get());
                     })
                     .build());
 
