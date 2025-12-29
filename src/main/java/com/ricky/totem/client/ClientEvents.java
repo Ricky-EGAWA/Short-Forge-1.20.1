@@ -46,24 +46,6 @@ public class ClientEvents extends RenderStateShard {
                     .createCompositeState(false)
     );
 
-    // エンドポータル用のRenderType（エンティティテクスチャを使用）
-    private static final ResourceLocation END_PORTAL_TEXTURE = new ResourceLocation("minecraft", "textures/entity/end_portal.png");
-    private static final RenderType END_PORTAL_RENDER_TYPE = RenderType.create(
-            "end_portal_map",
-            DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP,
-            VertexFormat.Mode.QUADS,
-            256,
-            false,
-            true,
-            RenderType.CompositeState.builder()
-                    .setShaderState(RENDERTYPE_TEXT_SHADER)
-                    .setTextureState(new TextureStateShard(END_PORTAL_TEXTURE, false, false))
-                    .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
-                    .setLightmapState(LIGHTMAP)
-                    .setCullState(CULL)
-                    .createCompositeState(false)
-    );
-
     @SubscribeEvent
     public static void onRenderItemInFrame(RenderItemInFrameEvent event) {
         ItemStack stack = event.getItemStack();
@@ -379,28 +361,21 @@ public class ClientEvents extends RenderStateShard {
         vertexConsumer.vertex(matrix4f, min, min, z).color(r, g, b, 255).uv(minU, minV).uv2(combinedLight).endVertex();
     }
 
-    // エンドポータルテクスチャを描画（entity/end_portal.pngを直接使用）
+    // エンドポータルテクスチャを描画（RenderType.endPortal()を使用）
     private static void renderEndPortalTexture(PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight) {
         Matrix4f matrix4f = poseStack.last().pose();
-        VertexConsumer vertexConsumer = bufferSource.getBuffer(END_PORTAL_RENDER_TYPE);
-
-        // テクスチャ全体を使用 (0.0 ~ 1.0)
-        float minU = 0.0F;
-        float maxU = 1.0F;
-        float minV = 0.0F;
-        float maxV = 1.0F;
+        // MinecraftのエンドポータルRenderTypeを使用
+        VertexConsumer vertexConsumer = bufferSource.getBuffer(RenderType.endPortal());
 
         // 128x128ピクセルの地図サイズでテクスチャを描画
         float min = -64.0F;
         float max = 64.0F;
         float z = -0.01F;
 
-        // 明るく描画
-        int r = 255, g = 255, b = 255;
-
-        vertexConsumer.vertex(matrix4f, min, max, z).color(r, g, b, 255).uv(minU, maxV).uv2(combinedLight).endVertex();
-        vertexConsumer.vertex(matrix4f, max, max, z).color(r, g, b, 255).uv(maxU, maxV).uv2(combinedLight).endVertex();
-        vertexConsumer.vertex(matrix4f, max, min, z).color(r, g, b, 255).uv(maxU, minV).uv2(combinedLight).endVertex();
-        vertexConsumer.vertex(matrix4f, min, min, z).color(r, g, b, 255).uv(minU, minV).uv2(combinedLight).endVertex();
+        // RenderType.endPortal()はPOSITIONのみを使用
+        vertexConsumer.vertex(matrix4f, min, max, z).endVertex();
+        vertexConsumer.vertex(matrix4f, max, max, z).endVertex();
+        vertexConsumer.vertex(matrix4f, max, min, z).endVertex();
+        vertexConsumer.vertex(matrix4f, min, min, z).endVertex();
     }
 }
