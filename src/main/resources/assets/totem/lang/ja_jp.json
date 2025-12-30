@@ -24,6 +24,11 @@
   "item.totem.stone_ladder_textured_map": "石ブロック背景のはしごテクスチャの地図",
   "block.totem.obsidian": "黒曜石",
   "block.totem.magma_stone": "マグマストーン",
+  "block.totem.bedrock_stone": "岩盤ストーン",
+  "block.totem.fake_iron_door": "偽鉄のドア",
+  "block.totem.fake_iron_trapdoor": "偽鉄のトラップドア",
+  "block.totem.sand_dirt": "砂の土",
+  "block.totem.gravel_dirt": "砂利の土",
 
   "creativetab.totem_tab": "トーテム",
   "creativetab.edible_tab": "変な食べ物",

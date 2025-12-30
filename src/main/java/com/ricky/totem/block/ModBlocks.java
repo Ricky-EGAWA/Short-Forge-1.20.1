@@ -8,7 +8,10 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -37,6 +40,26 @@ public class ModBlocks {
 
     public static final RegistryObject<Block> MAGMA_STONE = registerBlock("magma_stone",
             () -> new Block(BlockBehaviour.Properties.copy(Blocks.STONE)));
+
+    // 岩盤の見た目、石の性質
+    public static final RegistryObject<Block> BEDROCK_STONE = registerBlock("bedrock_stone",
+            () -> new Block(BlockBehaviour.Properties.copy(Blocks.STONE)));
+
+    // 鉄のドアの見た目、オークのドアの性質
+    public static final RegistryObject<Block> FAKE_IRON_DOOR = registerBlock("fake_iron_door",
+            () -> new DoorBlock(BlockBehaviour.Properties.copy(Blocks.OAK_DOOR), BlockSetType.OAK));
+
+    // 鉄のトラップドアの見た目、オークのトラップドアの性質
+    public static final RegistryObject<Block> FAKE_IRON_TRAPDOOR = registerBlock("fake_iron_trapdoor",
+            () -> new TrapDoorBlock(BlockBehaviour.Properties.copy(Blocks.OAK_TRAPDOOR), BlockSetType.OAK));
+
+    // 砂の見た目、土の性質
+    public static final RegistryObject<Block> SAND_DIRT = registerBlock("sand_dirt",
+            () -> new Block(BlockBehaviour.Properties.copy(Blocks.DIRT)));
+
+    // 砂利の見た目、土の性質
+    public static final RegistryObject<Block> GRAVEL_DIRT = registerBlock("gravel_dirt",
+            () -> new Block(BlockBehaviour.Properties.copy(Blocks.DIRT)));
 
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block) {
         RegistryObject<T> toReturn = BLOCKS.register(name, block);

@@ -69,6 +69,11 @@ public class ModCreativeModTabs {
                         pOutput.accept(ModBlocks.STONE127.get());
                         pOutput.accept(ModBlocks.STONE143.get());
                         pOutput.accept(ModBlocks.MAGMA_STONE.get());
+                        pOutput.accept(ModBlocks.BEDROCK_STONE.get());
+                        pOutput.accept(ModBlocks.FAKE_IRON_DOOR.get());
+                        pOutput.accept(ModBlocks.FAKE_IRON_TRAPDOOR.get());
+                        pOutput.accept(ModBlocks.SAND_DIRT.get());
+                        pOutput.accept(ModBlocks.GRAVEL_DIRT.get());
                     })
                     .build());
 

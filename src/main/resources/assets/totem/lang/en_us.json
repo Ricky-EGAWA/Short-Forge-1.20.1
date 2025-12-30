@@ -30,6 +30,11 @@
   "block.totem.stone127": "Stone 127",
   "block.totem.stone143": "Stone 143",
   "block.totem.magma_stone": "Magma Stone",
+  "block.totem.bedrock_stone": "Bedrock Stone",
+  "block.totem.fake_iron_door": "Fake Iron Door",
+  "block.totem.fake_iron_trapdoor": "Fake Iron Trapdoor",
+  "block.totem.sand_dirt": "Sand Dirt",
+  "block.totem.gravel_dirt": "Gravel Dirt",
 
   "creativetab.totem_tab": "Totem",
   "creativetab.edible_tab": "Edible Items",
