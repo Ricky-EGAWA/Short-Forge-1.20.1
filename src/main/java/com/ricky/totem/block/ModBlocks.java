@@ -1,6 +1,7 @@
 package com.ricky.totem.block;
 
 import com.ricky.totem.TotemItemsMod;
+import com.ricky.totem.fluid.ModFluids;
 import com.ricky.totem.item.EdibleBlockItem;
 import com.ricky.totem.item.ModFoodProperties;
 import com.ricky.totem.item.ModItems;
@@ -9,6 +10,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.BlockSetType;
@@ -68,6 +70,10 @@ public class ModBlocks {
     // 上に落ちる砂利
     public static final RegistryObject<Block> REVERSE_GRAVEL = registerBlock("reverse_gravel",
             () -> new ReverseFallingBlock(BlockBehaviour.Properties.copy(Blocks.GRAVEL)));
+
+    // 上に流れる水ブロック
+    public static final RegistryObject<LiquidBlock> REVERSE_WATER_BLOCK = BLOCKS.register("reverse_water_block",
+            () -> new LiquidBlock(ModFluids.SOURCE_REVERSE_WATER, BlockBehaviour.Properties.copy(Blocks.WATER)));
 
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block) {
         RegistryObject<T> toReturn = BLOCKS.register(name, block);

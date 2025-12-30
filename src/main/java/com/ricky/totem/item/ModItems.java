@@ -1,6 +1,7 @@
 package com.ricky.totem.item;
 
 import com.ricky.totem.TotemItemsMod;
+import com.ricky.totem.fluid.ModFluids;
 import com.ricky.totem.item.mapitem.*;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.*;
@@ -88,6 +89,10 @@ public class ModItems {
 
     public static final RegistryObject<Item> STONE_LADDER_TEXTURED_MAP = ITEMS.register("stone_ladder_textured_map",
             () -> new StoneLadderTexturedMapItem(new Item.Properties().stacksTo(64)));
+
+    // 上に流れる水のバケツ
+    public static final RegistryObject<Item> REVERSE_WATER_BUCKET = ITEMS.register("reverse_water_bucket",
+            () -> new BucketItem(ModFluids.SOURCE_REVERSE_WATER, new Item.Properties().craftRemainder(BUCKET).stacksTo(1)));
 
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);

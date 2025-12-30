@@ -31,6 +31,8 @@
   "block.totem.gravel_dirt": "砂利",
   "block.totem.reverse_sand": "逆さ砂",
   "block.totem.reverse_gravel": "逆さ砂利",
+  "block.totem.reverse_water": "逆さ水",
+  "item.totem.reverse_water_bucket": "逆さ水入りバケツ",
 
   "creativetab.totem_tab": "トーテム",
   "creativetab.edible_tab": "変な食べ物",

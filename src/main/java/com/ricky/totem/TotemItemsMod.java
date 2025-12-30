@@ -3,6 +3,8 @@ package com.ricky.totem;
 import com.mojang.logging.LogUtils;
 import com.ricky.totem.block.ModBlocks;
 import com.ricky.totem.entity.ModEntities;
+import com.ricky.totem.fluid.ModFluidTypes;
+import com.ricky.totem.fluid.ModFluids;
 import com.ricky.totem.item.ModCreativeModTabs;
 import com.ricky.totem.item.ModItems;
 import com.ricky.totem.item.totem.TotemEffectHandler;
@@ -39,6 +41,8 @@ public class TotemItemsMod {
         ModItems.register(modEventBus);
         ModBlocks.register(modEventBus);
         ModEntities.register(modEventBus);
+        ModFluidTypes.register(modEventBus);
+        ModFluids.register(modEventBus);
 
         modEventBus.addListener(this::commonSetup);
 
@@ -70,6 +74,10 @@ public class TotemItemsMod {
                 // ドアとトラップドアの透明部分を正しく表示するため
                 ItemBlockRenderTypes.setRenderLayer(ModBlocks.FAKE_IRON_DOOR.get(), RenderType.cutout());
                 ItemBlockRenderTypes.setRenderLayer(ModBlocks.FAKE_IRON_TRAPDOOR.get(), RenderType.cutout());
+
+                // 逆水ブロックの描画設定
+                ItemBlockRenderTypes.setRenderLayer(ModFluids.SOURCE_REVERSE_WATER.get(), RenderType.translucent());
+                ItemBlockRenderTypes.setRenderLayer(ModFluids.FLOWING_REVERSE_WATER.get(), RenderType.translucent());
             });
         }
 
