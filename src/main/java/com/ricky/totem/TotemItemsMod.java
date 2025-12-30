@@ -2,11 +2,14 @@ package com.ricky.totem;
 
 import com.mojang.logging.LogUtils;
 import com.ricky.totem.block.ModBlocks;
+import com.ricky.totem.entity.ModEntities;
 import com.ricky.totem.item.ModCreativeModTabs;
 import com.ricky.totem.item.ModItems;
 import com.ricky.totem.item.totem.TotemEffectHandler;
 import com.ricky.totem.network.ModNetworkHandler;
+import net.minecraft.client.renderer.entity.FallingBlockRenderer;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
@@ -35,6 +38,7 @@ public class TotemItemsMod {
 
         ModItems.register(modEventBus);
         ModBlocks.register(modEventBus);
+        ModEntities.register(modEventBus);
 
         modEventBus.addListener(this::commonSetup);
 
@@ -67,6 +71,11 @@ public class TotemItemsMod {
                 ItemBlockRenderTypes.setRenderLayer(ModBlocks.FAKE_IRON_DOOR.get(), RenderType.cutout());
                 ItemBlockRenderTypes.setRenderLayer(ModBlocks.FAKE_IRON_TRAPDOOR.get(), RenderType.cutout());
             });
+        }
+
+        @SubscribeEvent
+        public static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
+            event.registerEntityRenderer(ModEntities.REVERSE_FALLING_BLOCK.get(), FallingBlockRenderer::new);
         }
     }
 }

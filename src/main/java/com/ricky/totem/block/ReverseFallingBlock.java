@@ -1,13 +1,12 @@
 package com.ricky.totem.block;
 
+import com.ricky.totem.entity.ReverseFallingBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
-import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.FallingBlock;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -38,9 +37,7 @@ public class ReverseFallingBlock extends FallingBlock {
     public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         // 上のブロックが空気かどうかチェック
         if (canFallUp(level, pos)) {
-            FallingBlockEntity fallingBlock = FallingBlockEntity.fall(level, pos, state);
-            // 上向きの速度を設定
-            fallingBlock.setDeltaMovement(0, 0.5, 0);
+            ReverseFallingBlockEntity fallingBlock = ReverseFallingBlockEntity.fall(level, pos, state);
             this.falling(fallingBlock);
         }
     }
