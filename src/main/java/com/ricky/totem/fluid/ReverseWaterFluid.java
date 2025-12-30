@@ -10,7 +10,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -18,8 +17,14 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.FluidState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraftforge.fluids.FluidType;
 
+/**
+ * 通常の水の挙動を上下反転させた流体
+ * - 通常: 下に落ちる → 逆: 上に上がる
+ * - 通常: 上から供給を受ける → 逆: 下から供給を受ける
+ */
 public abstract class ReverseWaterFluid extends FlowingFluid {
 
     @Override
@@ -86,83 +91,191 @@ public abstract class ReverseWaterFluid extends FlowingFluid {
 
     @Override
     protected boolean canBeReplacedWith(FluidState state, BlockGetter level, BlockPos pos, Fluid fluid, Direction direction) {
-        // 下方向からの置き換えのみ許可しない
-        return direction != Direction.DOWN && !isSame(fluid);
+        return direction == Direction.UP && !isSame(fluid);
     }
 
     /**
-     * 下方向への広がりを完全に無効化し、上方向のみに広がる
+     * 流体の新しい状態を計算（通常の水のgetNewLiquidを上下反転）
+     * 通常: 上にソースがあれば落下水（レベル8）
+     * 逆さ: 下にソースがあれば上昇水（レベル8）
      */
     @Override
-    protected void spread(Level level, BlockPos pos, FluidState state) {
-        // 何もしない - tick()で処理する
-    }
+    protected FluidState getNewLiquid(Level level, BlockPos pos, BlockState blockState) {
+        int maxLevel = 0;
+        int sourceCount = 0;
 
-    @Override
-    public void tick(Level level, BlockPos pos, FluidState state) {
-        if (!level.isClientSide) {
-            if (!state.isSource()) {
-                // 水源からの供給をチェック
-                int newAmount = getNewAmountFromSource(level, pos);
+        // 水平方向の隣接ブロックをチェック
+        for (Direction direction : Direction.Plane.HORIZONTAL) {
+            BlockPos neighborPos = pos.relative(direction);
+            BlockState neighborState = level.getBlockState(neighborPos);
+            FluidState neighborFluid = neighborState.getFluidState();
 
-                if (newAmount <= 0) {
-                    // 水源がなくなったので消える
-                    level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
-                    return;
-                } else if (newAmount != state.getAmount()) {
-                    // 水位を更新
-                    FluidState newState = getFlowing(newAmount, false);
-                    level.setBlock(pos, newState.createLegacyBlock(), 3);
-                    level.scheduleTick(pos, this, getTickDelay(level));
+            if (isSame(neighborFluid.getType())) {
+                if (neighborFluid.isSource()) {
+                    sourceCount++;
+                }
+                int neighborAmount = neighborFluid.getAmount();
+                if (neighborAmount > maxLevel) {
+                    maxLevel = neighborAmount;
                 }
             }
-
-            // 上方向にのみ広がる
-            spreadUpwardOnly(level, pos, state);
         }
-    }
 
-    /**
-     * 下のブロックから水源を探して新しい水位を計算
-     * 水は下から上に流れるので、下にある水から供給を受ける
-     */
-    protected int getNewAmountFromSource(Level level, BlockPos pos) {
-        // 下のブロックをチェック（主な供給源）
+        // 下のブロックをチェック（通常の水では上をチェック）
         BlockPos belowPos = pos.below();
-        FluidState belowFluid = level.getFluidState(belowPos);
+        BlockState belowState = level.getBlockState(belowPos);
+        FluidState belowFluid = belowState.getFluidState();
 
         if (isSame(belowFluid.getType())) {
-            // 下にある水から1減らした値
-            return belowFluid.getAmount() - getDropOff(level);
+            // 下に同じ流体があれば、上昇水としてレベル8になる（通常の落下水と同じ）
+            return getFlowing(8, true);
         }
 
-        // 下に水がない場合は0（消える）
-        return 0;
+        // 水平方向からの供給
+        int newLevel = maxLevel - getDropOff(level);
+        if (newLevel <= 0) {
+            return Fluids.EMPTY.defaultFluidState();
+        }
+
+        return getFlowing(newLevel, false);
     }
 
     /**
-     * 上方向にのみ水を広げる
+     * 流体を広げる（通常の水のspreadを上下反転）
      */
-    protected void spreadUpwardOnly(Level level, BlockPos pos, FluidState fluidState) {
-        if (fluidState.isEmpty()) return;
+    @Override
+    protected void spread(Level level, BlockPos pos, FluidState fluidState) {
+        if (!fluidState.isEmpty()) {
+            BlockState blockState = level.getBlockState(pos);
 
-        int currentAmount = fluidState.getAmount();
-        int newLevel = currentAmount - getDropOff(level);
+            // 上方向への広がりをチェック（通常の水では下方向）
+            BlockPos abovePos = pos.above();
+            BlockState aboveState = level.getBlockState(abovePos);
 
-        if (newLevel <= 0) return;
-
-        BlockPos abovePos = pos.above();
-        BlockState aboveState = level.getBlockState(abovePos);
-        FluidState aboveFluid = level.getFluidState(abovePos);
-
-        // 上のブロックが空気か置き換え可能で、まだ水がないか水位が低い場合
-        if ((aboveState.isAir() || aboveState.canBeReplaced()) &&
-            (aboveFluid.isEmpty() || (isSame(aboveFluid.getType()) && aboveFluid.getAmount() < newLevel))) {
-
-            FluidState newFluidState = getFlowing(newLevel, false);
-            level.setBlock(abovePos, newFluidState.createLegacyBlock(), 3);
-            level.scheduleTick(abovePos, this, getTickDelay(level));
+            if (canSpreadTo(level, pos, blockState, Direction.UP, abovePos, aboveState, level.getFluidState(abovePos), fluidState.getType())) {
+                // 上に広がれる場合、レベル8で広がる（上昇水）
+                spreadTo(level, abovePos, aboveState, Direction.UP, getFlowing(8, true));
+            } else if (fluidState.isSource() || !isWaterHole(level, fluidState.getType(), pos, blockState, abovePos, aboveState)) {
+                // 上に広がれない場合、水平方向に広がる
+                spreadToSides(level, pos, fluidState, blockState);
+            }
         }
+    }
+
+    /**
+     * 水平方向に広げる
+     */
+    private void spreadToSides(Level level, BlockPos pos, FluidState fluidState, BlockState blockState) {
+        int currentLevel = fluidState.getAmount() - getDropOff(level);
+        if (currentLevel <= 0) {
+            return;
+        }
+
+        // 最も良い広がり先を見つける
+        java.util.Map<Direction, FluidState> spreadMap = getSpread(level, pos, blockState);
+
+        for (java.util.Map.Entry<Direction, FluidState> entry : spreadMap.entrySet()) {
+            Direction direction = entry.getKey();
+            FluidState newFluidState = entry.getValue();
+            BlockPos neighborPos = pos.relative(direction);
+            BlockState neighborState = level.getBlockState(neighborPos);
+
+            if (canSpreadTo(level, pos, blockState, direction, neighborPos, neighborState, level.getFluidState(neighborPos), newFluidState.getType())) {
+                spreadTo(level, neighborPos, neighborState, direction, newFluidState);
+            }
+        }
+    }
+
+    /**
+     * 上方向への穴（上昇できる場所）があるかチェック
+     * 通常の水のisWaterHoleを上下反転
+     */
+    private boolean isWaterHole(BlockGetter level, Fluid fluid, BlockPos pos, BlockState blockState, BlockPos abovePos, BlockState aboveState) {
+        if (!canPassThroughWall(Direction.UP, level, pos, blockState, abovePos, aboveState)) {
+            return false;
+        }
+        return aboveState.getFluidState().getType().isSame(fluid) || canHoldFluid(level, abovePos, aboveState, fluid);
+    }
+
+    /**
+     * 広がり先を計算
+     */
+    @Override
+    protected java.util.Map<Direction, FluidState> getSpread(Level level, BlockPos pos, BlockState blockState) {
+        int currentLevel = level.getFluidState(pos).getAmount();
+        java.util.Map<Direction, FluidState> map = new java.util.HashMap<>();
+
+        for (Direction direction : Direction.Plane.HORIZONTAL) {
+            BlockPos neighborPos = pos.relative(direction);
+            BlockState neighborState = level.getBlockState(neighborPos);
+
+            if (canPassThroughWall(direction, level, pos, blockState, neighborPos, neighborState) && canHoldFluid(level, neighborPos, neighborState, this)) {
+                // 上方向への最短経路を探す（通常の水では下方向）
+                int distance = getSlopeDistance(level, neighborPos, 1, direction.getOpposite(), neighborState, pos);
+                int newLevel;
+
+                if (distance < getSlopeFindDistance(level)) {
+                    newLevel = currentLevel - getDropOff(level);
+                } else {
+                    newLevel = currentLevel - getDropOff(level);
+                }
+
+                if (newLevel > 0) {
+                    map.put(direction, getFlowing(newLevel, false));
+                }
+            }
+        }
+
+        return map;
+    }
+
+    /**
+     * 上方向への傾斜距離を計算（通常の水では下方向）
+     */
+    protected int getSlopeDistance(LevelReader level, BlockPos pos, int distance, Direction excludeDirection, BlockState state, BlockPos sourcePos) {
+        int minDistance = 1000;
+
+        for (Direction direction : Direction.Plane.HORIZONTAL) {
+            if (direction == excludeDirection) continue;
+
+            BlockPos neighborPos = pos.relative(direction);
+            BlockState neighborState = level.getBlockState(neighborPos);
+
+            if (!canPassThroughWall(direction, level, pos, state, neighborPos, neighborState) || !canHoldFluid(level, neighborPos, neighborState, this)) {
+                continue;
+            }
+
+            // 上に穴があるかチェック（通常の水では下をチェック）
+            BlockPos abovePos = neighborPos.above();
+            BlockState aboveState = level.getBlockState(abovePos);
+
+            if (isWaterHole(level, this, neighborPos, neighborState, abovePos, aboveState)) {
+                return distance;
+            }
+
+            if (distance < getSlopeFindDistance(level)) {
+                int newDistance = getSlopeDistance(level, neighborPos, distance + 1, direction.getOpposite(), neighborState, sourcePos);
+                if (newDistance < minDistance) {
+                    minDistance = newDistance;
+                }
+            }
+        }
+
+        return minDistance;
+    }
+
+    private boolean canPassThroughWall(Direction direction, BlockGetter level, BlockPos pos, BlockState state, BlockPos neighborPos, BlockState neighborState) {
+        return !state.isFaceSturdy(level, pos, direction) && !neighborState.isFaceSturdy(level, neighborPos, direction.getOpposite());
+    }
+
+    private boolean canHoldFluid(BlockGetter level, BlockPos pos, BlockState state, Fluid fluid) {
+        return state.canBeReplaced(fluid) || state.isAir();
+    }
+
+    protected boolean canSpreadTo(Level level, BlockPos fromPos, BlockState fromState, Direction direction, BlockPos toPos, BlockState toState, FluidState toFluidState, Fluid fluid) {
+        return toFluidState.canBeReplacedWith(level, toPos, fluid, direction) &&
+               canPassThroughWall(direction, level, fromPos, fromState, toPos, toState) &&
+               canHoldFluid(level, toPos, toState, fluid);
     }
 
     public static class Flowing extends ReverseWaterFluid {
