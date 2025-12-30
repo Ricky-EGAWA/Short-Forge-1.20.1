@@ -89,46 +89,16 @@ public abstract class ReverseWaterFluid extends FlowingFluid {
     }
 
     /**
-     * 上方向に広がるようにオーバーライド
+     * 下方向への広がりを完全に無効化
      */
     @Override
-    protected void spreadTo(LevelAccessor level, BlockPos pos, BlockState blockState, Direction direction, FluidState fluidState) {
-        if (!blockState.isAir() && !blockState.canBeReplaced()) {
-            return;
+    protected void spread(Level level, BlockPos pos, FluidState state) {
+        // 親のspread()を呼び出さない - 下方向への流れを完全に無効化
+        // 代わりに上方向と水平方向のみに広がる
+        if (!state.isEmpty()) {
+            spreadUpward(level, pos, state);
+            spreadHorizontally(level, pos, state);
         }
-
-        // 上方向への広がりを許可
-        if (direction == Direction.UP) {
-            level.setBlock(pos, fluidState.createLegacyBlock(), 3);
-            return;
-        }
-
-        // 水平方向の広がりも許可
-        if (direction != Direction.DOWN) {
-            super.spreadTo(level, pos, blockState, direction, fluidState);
-        }
-    }
-
-    @Override
-    public void tick(Level level, BlockPos pos, FluidState state) {
-        if (!state.isSource()) {
-            FluidState fluidState = this.getNewLiquid(level, pos, level.getBlockState(pos));
-            int tickDelay = this.getTickDelay(level);
-
-            if (fluidState.isEmpty()) {
-                state = fluidState;
-                level.setBlock(pos, fluidState.createLegacyBlock(), 3);
-            } else if (!fluidState.equals(state)) {
-                state = fluidState;
-                level.setBlock(pos, fluidState.createLegacyBlock(), 3);
-                level.scheduleTick(pos, fluidState.getType(), tickDelay);
-            }
-        }
-
-        // 上方向に広がる
-        this.spreadUpward(level, pos, state);
-        // 水平方向にも広がる
-        this.spread(level, pos, state);
     }
 
     /**
@@ -149,6 +119,79 @@ public abstract class ReverseWaterFluid extends FlowingFluid {
                 level.scheduleTick(abovePos, this, getTickDelay(level));
             }
         }
+    }
+
+    /**
+     * 水平方向に水を広げる
+     */
+    protected void spreadHorizontally(Level level, BlockPos pos, FluidState fluidState) {
+        if (fluidState.isEmpty()) return;
+
+        int currentAmount = fluidState.getAmount();
+        if (currentAmount <= 1) return;
+
+        for (Direction direction : Direction.Plane.HORIZONTAL) {
+            BlockPos neighborPos = pos.relative(direction);
+            BlockState neighborState = level.getBlockState(neighborPos);
+
+            if (neighborState.isAir() || neighborState.canBeReplaced()) {
+                FluidState neighborFluid = level.getFluidState(neighborPos);
+                int newLevel = currentAmount - getDropOff(level);
+
+                if (newLevel > 0 && (neighborFluid.isEmpty() || neighborFluid.getAmount() < newLevel)) {
+                    FluidState newFluidState = getFlowing(newLevel, false);
+                    level.setBlock(neighborPos, newFluidState.createLegacyBlock(), 3);
+                    level.scheduleTick(neighborPos, this, getTickDelay(level));
+                }
+            }
+        }
+    }
+
+    @Override
+    public void tick(Level level, BlockPos pos, FluidState state) {
+        if (!state.isSource()) {
+            // ソースブロックからの距離に基づいて水位を更新
+            int newAmount = calculateNewAmount(level, pos);
+
+            if (newAmount <= 0) {
+                // 水が消える
+                level.setBlock(pos, state.createLegacyBlock().getFluidState().createLegacyBlock(), 3);
+                level.removeBlock(pos, false);
+                return;
+            } else if (newAmount != state.getAmount()) {
+                FluidState newState = getFlowing(newAmount, false);
+                level.setBlock(pos, newState.createLegacyBlock(), 3);
+                level.scheduleTick(pos, this, getTickDelay(level));
+            }
+        }
+
+        // 広がる
+        this.spread(level, pos, state);
+    }
+
+    /**
+     * 周囲のブロックから新しい水位を計算（下方向からの供給を見る）
+     */
+    protected int calculateNewAmount(Level level, BlockPos pos) {
+        int maxAmount = 0;
+
+        // 下のブロックをチェック（ソースからの供給）
+        BlockPos belowPos = pos.below();
+        FluidState belowFluid = level.getFluidState(belowPos);
+        if (isSame(belowFluid.getType())) {
+            maxAmount = Math.max(maxAmount, belowFluid.getAmount() - getDropOff(level));
+        }
+
+        // 水平方向をチェック
+        for (Direction direction : Direction.Plane.HORIZONTAL) {
+            BlockPos neighborPos = pos.relative(direction);
+            FluidState neighborFluid = level.getFluidState(neighborPos);
+            if (isSame(neighborFluid.getType())) {
+                maxAmount = Math.max(maxAmount, neighborFluid.getAmount() - getDropOff(level));
+            }
+        }
+
+        return maxAmount;
     }
 
     public static class Flowing extends ReverseWaterFluid {

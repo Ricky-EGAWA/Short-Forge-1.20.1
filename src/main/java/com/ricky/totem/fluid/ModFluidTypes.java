@@ -53,8 +53,8 @@ public class ModFluidTypes {
 
                         @Override
                         public int getTintColor() {
-                            // 紫色に着色して区別しやすくする
-                            return 0xFFAA55FF;
+                            // 通常の水と同じ色
+                            return 0xFF3F76E4;
                         }
                     });
                 }
