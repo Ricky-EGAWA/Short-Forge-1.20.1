@@ -47,11 +47,11 @@ public class ModBlocks {
 
     // 鉄のドアの見た目、オークのドアの性質
     public static final RegistryObject<Block> FAKE_IRON_DOOR = registerBlock("fake_iron_door",
-            () -> new DoorBlock(BlockBehaviour.Properties.copy(Blocks.OAK_DOOR), BlockSetType.OAK));
+            () -> new DoorBlock(BlockBehaviour.Properties.copy(Blocks.OAK_DOOR).noOcclusion(), BlockSetType.OAK));
 
     // 鉄のトラップドアの見た目、オークのトラップドアの性質
     public static final RegistryObject<Block> FAKE_IRON_TRAPDOOR = registerBlock("fake_iron_trapdoor",
-            () -> new TrapDoorBlock(BlockBehaviour.Properties.copy(Blocks.OAK_TRAPDOOR), BlockSetType.OAK));
+            () -> new TrapDoorBlock(BlockBehaviour.Properties.copy(Blocks.OAK_TRAPDOOR).noOcclusion(), BlockSetType.OAK));
 
     // 砂の見た目、土の性質
     public static final RegistryObject<Block> SAND_DIRT = registerBlock("sand_dirt",
