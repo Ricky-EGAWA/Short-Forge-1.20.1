@@ -75,6 +75,10 @@ public class ModBlocks {
     public static final RegistryObject<LiquidBlock> REVERSE_WATER_BLOCK = BLOCKS.register("reverse_water_block",
             () -> new LiquidBlock(ModFluids.SOURCE_REVERSE_WATER, BlockBehaviour.Properties.copy(Blocks.WATER)));
 
+    // 天井に設置できる松明
+    public static final RegistryObject<Block> CEILING_TORCH = registerBlock("ceiling_torch",
+            () -> new CeilingTorchBlock(BlockBehaviour.Properties.copy(Blocks.TORCH)));
+
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block) {
         RegistryObject<T> toReturn = BLOCKS.register(name, block);
         registerBlockItem(name, toReturn);
