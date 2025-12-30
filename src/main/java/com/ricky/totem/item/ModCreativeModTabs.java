@@ -68,6 +68,7 @@ public class ModCreativeModTabs {
                         pOutput.accept(ModBlocks.STONE116.get());
                         pOutput.accept(ModBlocks.STONE127.get());
                         pOutput.accept(ModBlocks.STONE143.get());
+                        pOutput.accept(ModBlocks.MAGMA_STONE.get());
                     })
                     .build());
 
