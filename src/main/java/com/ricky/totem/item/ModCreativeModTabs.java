@@ -74,6 +74,8 @@ public class ModCreativeModTabs {
                         pOutput.accept(ModBlocks.FAKE_IRON_TRAPDOOR.get());
                         pOutput.accept(ModBlocks.SAND_DIRT.get());
                         pOutput.accept(ModBlocks.GRAVEL_DIRT.get());
+                        pOutput.accept(ModBlocks.REVERSE_SAND.get());
+                        pOutput.accept(ModBlocks.REVERSE_GRAVEL.get());
                     })
                     .build());
 

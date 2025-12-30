@@ -61,6 +61,14 @@ public class ModBlocks {
     public static final RegistryObject<Block> GRAVEL_DIRT = registerBlock("gravel_dirt",
             () -> new Block(BlockBehaviour.Properties.copy(Blocks.DIRT)));
 
+    // 上に落ちる砂
+    public static final RegistryObject<Block> REVERSE_SAND = registerBlock("reverse_sand",
+            () -> new ReverseFallingBlock(BlockBehaviour.Properties.copy(Blocks.SAND)));
+
+    // 上に落ちる砂利
+    public static final RegistryObject<Block> REVERSE_GRAVEL = registerBlock("reverse_gravel",
+            () -> new ReverseFallingBlock(BlockBehaviour.Properties.copy(Blocks.GRAVEL)));
+
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block) {
         RegistryObject<T> toReturn = BLOCKS.register(name, block);
         registerBlockItem(name, toReturn);

@@ -29,6 +29,8 @@
   "block.totem.fake_iron_trapdoor": "鉄のトラップドア",
   "block.totem.sand_dirt": "砂",
   "block.totem.gravel_dirt": "砂利",
+  "block.totem.reverse_sand": "逆さ砂",
+  "block.totem.reverse_gravel": "逆さ砂利",
 
   "creativetab.totem_tab": "トーテム",
   "creativetab.edible_tab": "変な食べ物",

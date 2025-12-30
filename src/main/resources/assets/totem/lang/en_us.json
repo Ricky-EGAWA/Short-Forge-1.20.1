@@ -35,6 +35,8 @@
   "block.totem.fake_iron_trapdoor": "Iron Trapdoor",
   "block.totem.sand_dirt": "Sand",
   "block.totem.gravel_dirt": "Gravel",
+  "block.totem.reverse_sand": "Reverse Sand",
+  "block.totem.reverse_gravel": "Reverse Gravel",
 
   "creativetab.totem_tab": "Totem",
   "creativetab.edible_tab": "Edible Items",
