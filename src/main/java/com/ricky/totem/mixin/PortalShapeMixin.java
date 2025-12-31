@@ -41,10 +41,10 @@ public abstract class PortalShapeMixin {
     private Direction rightDir;
 
     @Shadow
-    private int getDistanceUntilEdge(BlockPos pos, Direction direction);
+    private int getDistanceUntilEdgeAboveFrame(BlockPos pPos, Direction pDirection);
 
     @Shadow
-    private int getDistanceUntilTop(BlockPos pos);
+    private int getDistanceUntilTop(BlockPos.MutableBlockPos pPos);
 
     /**
      * calculateWidthの戻り値を修正
@@ -54,7 +54,7 @@ public abstract class PortalShapeMixin {
     private void onCalculateWidth(CallbackInfoReturnable<Integer> cir) {
         if (cir.getReturnValue() == 0 && this.bottomLeft != null) {
             // 元のメソッドが0を返した場合、実際の幅を再計算
-            int actualWidth = this.getDistanceUntilEdge(this.bottomLeft, this.rightDir);
+            int actualWidth = this.getDistanceUntilEdgeAboveFrame(this.bottomLeft, this.rightDir);
             if (actualWidth >= 1 && actualWidth <= 21) {
                 cir.setReturnValue(actualWidth);
             }
@@ -67,9 +67,10 @@ public abstract class PortalShapeMixin {
      */
     @Inject(method = "calculateHeight", at = @At("RETURN"), cancellable = true)
     private void onCalculateHeight(CallbackInfoReturnable<Integer> cir) {
-        if (cir.getReturnValue() == 0 && this.bottomLeft != null) {
+        if (cir.getReturnValue() == 0 && this.bottomLeft != null && this.width > 0) {
             // 元のメソッドが0を返した場合、実際の高さを再計算
-            int actualHeight = this.getDistanceUntilTop(this.bottomLeft);
+            BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
+            int actualHeight = this.getDistanceUntilTop(mutablePos);
             if (actualHeight >= 1 && actualHeight <= 21) {
                 cir.setReturnValue(actualHeight);
             }
