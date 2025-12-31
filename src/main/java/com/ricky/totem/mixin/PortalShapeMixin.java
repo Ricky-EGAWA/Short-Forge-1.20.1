@@ -41,10 +41,10 @@ public abstract class PortalShapeMixin {
     private Direction rightDir;
 
     @Shadow
-    private int getDistanceUntilEdgeAboveFrame(BlockPos pPos, Direction pDirection);
+    protected abstract int getDistanceUntilEdgeAboveFrame(BlockPos pPos, Direction pDirection);
 
     @Shadow
-    private int getDistanceUntilTop(BlockPos.MutableBlockPos pPos);
+    protected abstract int getDistanceUntilTop(BlockPos.MutableBlockPos pPos);
 
     /**
      * calculateWidthの戻り値を修正
