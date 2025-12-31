@@ -6,7 +6,9 @@
   "refmap": "totem.refmap.json",
   "mixins": [
     "PlayerSwimmingDimensionsMixin",
-    "PortalShapeMixin"
+    "PortalShapeMixin",
+    "EndPortalFrameBlockMixin",
+    "EnderEyeItemMixin"
   ],
   "client": [
     "ClientPacketListenerMixin",
