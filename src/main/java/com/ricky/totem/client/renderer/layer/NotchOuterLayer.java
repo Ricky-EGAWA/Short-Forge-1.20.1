@@ -18,7 +18,7 @@ import net.minecraft.resources.ResourceLocation;
 public class NotchOuterLayer<T extends NotchEntity, M extends EntityModel<T>> extends RenderLayer<T, M> {
 
     private static final ResourceLocation NOTCH_OUTER_TEXTURE =
-            new ResourceLocation(TotemItemsMod.MOD_ID, "textures/entity/skin/notch_outer.png");
+            new ResourceLocation(TotemItemsMod.MOD_ID, "textures/entity/skin/notch.png");
 
     private final PlayerModel<T> outerModel;
 
