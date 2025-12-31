@@ -1,9 +1,17 @@
 package com.ricky.totem.mixin;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.portal.PortalShape;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.Constant;
-import org.spongepowered.asm.mixin.injection.ModifyConstant;
+import org.spongepowered.asm.mixin.Mutable;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
  * ネザーポータルの最小サイズを1x1に変更するMixin
@@ -13,19 +21,25 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 @Mixin(PortalShape.class)
 public class PortalShapeMixin {
 
-    /**
-     * 最小幅の定数(2)を1に変更
-     */
-    @ModifyConstant(method = "calculateBottomLeft", constant = @Constant(intValue = 2))
-    private int modifyMinWidth(int original) {
-        return 1;
-    }
+    @Shadow
+    @Final
+    @Mutable
+    private int width;
+
+    @Shadow
+    @Final
+    @Mutable
+    private int height;
 
     /**
-     * 最小高さの定数(3)を1に変更
+     * ポータルが有効かどうかのチェックを修正
+     * 通常は幅>=2、高さ>=3が必要だが、1x1でも有効にする
      */
-    @ModifyConstant(method = "calculateHeight", constant = @Constant(intValue = 3))
-    private int modifyMinHeight(int original) {
-        return 1;
+    @Inject(method = "isValid", at = @At("HEAD"), cancellable = true)
+    private void onIsValid(CallbackInfoReturnable<Boolean> cir) {
+        // 幅と高さが1以上あれば有効とする
+        if (this.width >= 1 && this.height >= 1) {
+            cir.setReturnValue(true);
+        }
     }
 }
