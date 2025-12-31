@@ -3,6 +3,7 @@ package com.ricky.totem.entity;
 import com.ricky.totem.TotemItemsMod;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.monster.Husk;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -19,6 +20,20 @@ public class ModEntities {
                             .clientTrackingRange(10)
                             .updateInterval(20)
                             .build("reverse_falling_block"));
+
+    public static final RegistryObject<EntityType<DonaldEntity>> DONALD =
+            ENTITY_TYPES.register("donald",
+                    () -> EntityType.Builder.of(DonaldEntity::new, MobCategory.MONSTER)
+                            .sized(0.6F, 1.95F)
+                            .clientTrackingRange(8)
+                            .build("donald"));
+
+    public static final RegistryObject<EntityType<MinnieEntity>> MINNIE =
+            ENTITY_TYPES.register("minnie",
+                    () -> EntityType.Builder.of(MinnieEntity::new, MobCategory.MONSTER)
+                            .sized(0.6F, 1.95F)
+                            .clientTrackingRange(8)
+                            .build("minnie"));
 
     public static void register(IEventBus eventBus) {
         ENTITY_TYPES.register(eventBus);
