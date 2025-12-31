@@ -1,6 +1,7 @@
 package com.ricky.totem.mixin;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.level.portal.PortalShape;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -18,7 +19,7 @@ import javax.annotation.Nullable;
  * 変更後: 最小1x1、最大21x21
  */
 @Mixin(PortalShape.class)
-public class PortalShapeMixin {
+public abstract class PortalShapeMixin {
 
     @Shadow
     @Final
@@ -34,6 +35,46 @@ public class PortalShapeMixin {
     @Final
     @Nullable
     private BlockPos bottomLeft;
+
+    @Shadow
+    @Final
+    private Direction rightDir;
+
+    @Shadow
+    private int getDistanceUntilEdge(BlockPos pos, Direction direction);
+
+    @Shadow
+    private int getDistanceUntilTop(BlockPos pos);
+
+    /**
+     * calculateWidthの戻り値を修正
+     * 通常は幅<2で0を返すが、幅>=1なら実際の幅を返すようにする
+     */
+    @Inject(method = "calculateWidth", at = @At("RETURN"), cancellable = true)
+    private void onCalculateWidth(CallbackInfoReturnable<Integer> cir) {
+        if (cir.getReturnValue() == 0 && this.bottomLeft != null) {
+            // 元のメソッドが0を返した場合、実際の幅を再計算
+            int actualWidth = this.getDistanceUntilEdge(this.bottomLeft, this.rightDir);
+            if (actualWidth >= 1 && actualWidth <= 21) {
+                cir.setReturnValue(actualWidth);
+            }
+        }
+    }
+
+    /**
+     * calculateHeightの戻り値を修正
+     * 通常は高さ<3で0を返すが、高さ>=1なら実際の高さを返すようにする
+     */
+    @Inject(method = "calculateHeight", at = @At("RETURN"), cancellable = true)
+    private void onCalculateHeight(CallbackInfoReturnable<Integer> cir) {
+        if (cir.getReturnValue() == 0 && this.bottomLeft != null) {
+            // 元のメソッドが0を返した場合、実際の高さを再計算
+            int actualHeight = this.getDistanceUntilTop(this.bottomLeft);
+            if (actualHeight >= 1 && actualHeight <= 21) {
+                cir.setReturnValue(actualHeight);
+            }
+        }
+    }
 
     /**
      * ポータルが有効かどうかのチェックを修正
