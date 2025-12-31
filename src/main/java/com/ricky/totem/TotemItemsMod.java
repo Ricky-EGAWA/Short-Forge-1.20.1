@@ -3,8 +3,10 @@ package com.ricky.totem;
 import com.mojang.logging.LogUtils;
 import com.ricky.totem.block.ModBlocks;
 import com.ricky.totem.client.renderer.DonaldRenderer;
-import com.ricky.totem.client.renderer.MinnieRenderer;
+import com.ricky.totem.client.renderer.NotchRenderer;
+import com.ricky.totem.entity.DonaldEntity;
 import com.ricky.totem.entity.ModEntities;
+import com.ricky.totem.entity.NotchEntity;
 import com.ricky.totem.fluid.ModFluidTypes;
 import com.ricky.totem.fluid.ModFluids;
 import com.ricky.totem.item.ModCreativeModTabs;
@@ -26,7 +28,6 @@ import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraft.world.entity.monster.Zombie;
 import org.slf4j.Logger;
 
 // The value here should match an entry in the META-INF/mods.toml file
@@ -56,8 +57,8 @@ public class TotemItemsMod {
     }
 
     private void registerEntityAttributes(EntityAttributeCreationEvent event) {
-        event.put(ModEntities.DONALD.get(), Zombie.createAttributes().build());
-        event.put(ModEntities.MINNIE.get(), Zombie.createAttributes().build());
+        event.put(ModEntities.DONALD.get(), DonaldEntity.createAttributes().build());
+        event.put(ModEntities.NOTCH.get(), NotchEntity.createAttributes().build());
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
@@ -98,7 +99,7 @@ public class TotemItemsMod {
         public static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
             event.registerEntityRenderer(ModEntities.REVERSE_FALLING_BLOCK.get(), FallingBlockRenderer::new);
             event.registerEntityRenderer(ModEntities.DONALD.get(), DonaldRenderer::new);
-            event.registerEntityRenderer(ModEntities.MINNIE.get(), MinnieRenderer::new);
+            event.registerEntityRenderer(ModEntities.NOTCH.get(), NotchRenderer::new);
         }
     }
 }

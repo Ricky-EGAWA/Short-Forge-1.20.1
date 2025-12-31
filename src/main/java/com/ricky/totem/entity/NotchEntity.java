@@ -12,11 +12,11 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 
 /**
- * ドナルドエンティティ - ランダムウォークのみ行う友好的なモブ
+ * ノッチエンティティ - ランダムウォークのみ行う友好的なモブ
  */
-public class DonaldEntity extends PathfinderMob {
+public class NotchEntity extends PathfinderMob {
 
-    public DonaldEntity(EntityType<? extends PathfinderMob> entityType, Level level) {
+    public NotchEntity(EntityType<? extends PathfinderMob> entityType, Level level) {
         super(entityType, level);
     }
 

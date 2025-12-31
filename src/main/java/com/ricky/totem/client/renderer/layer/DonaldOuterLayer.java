@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.ricky.totem.TotemItemsMod;
 import com.ricky.totem.entity.DonaldEntity;
 import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.model.ZombieModel;
+import net.minecraft.client.model.PlayerModel;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.model.geom.ModelLayers;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -20,11 +20,11 @@ public class DonaldOuterLayer<T extends DonaldEntity, M extends EntityModel<T>> 
     private static final ResourceLocation DONALD_OUTER_TEXTURE =
             new ResourceLocation(TotemItemsMod.MOD_ID, "textures/entity/skin/donald_outer.png");
 
-    private final ZombieModel<T> outerModel;
+    private final PlayerModel<T> outerModel;
 
     public DonaldOuterLayer(RenderLayerParent<T, M> parent, EntityModelSet modelSet) {
         super(parent);
-        this.outerModel = new ZombieModel<>(modelSet.bakeLayer(ModelLayers.HUSK));
+        this.outerModel = new PlayerModel<>(modelSet.bakeLayer(ModelLayers.PLAYER_OUTER_ARMOR), false);
     }
 
     @Override
