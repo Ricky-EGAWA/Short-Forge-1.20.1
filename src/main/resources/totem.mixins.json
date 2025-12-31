@@ -7,7 +7,6 @@
   "mixins": [
     "PlayerSwimmingDimensionsMixin",
     "PortalShapeMixin",
-    "EndPortalFrameBlockMixin",
     "EnderEyeItemMixin"
   ],
   "client": [

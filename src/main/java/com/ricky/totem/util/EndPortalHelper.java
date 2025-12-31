@@ -1,4 +1,4 @@
-package com.ricky.totem.mixin;
+package com.ricky.totem.util;
 
 import com.google.common.base.Predicates;
 import net.minecraft.core.Direction;
@@ -8,18 +8,13 @@ import net.minecraft.world.level.block.state.pattern.BlockInWorld;
 import net.minecraft.world.level.block.state.pattern.BlockPattern;
 import net.minecraft.world.level.block.state.pattern.BlockPatternBuilder;
 import net.minecraft.world.level.block.state.predicate.BlockStatePredicate;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 
 /**
- * エンドポータルの最小サイズを1x1に変更するMixin
- * 通常: 3x3ポータル（5x5フレームパターン）
- * 追加: 1x1ポータル（3x3フレームパターン）
+ * エンドポータルのヘルパークラス
+ * 1x1ポータル用のパターンを提供
  */
-@Mixin(EndPortalFrameBlock.class)
-public class EndPortalFrameBlockMixin {
+public class EndPortalHelper {
 
-    @Unique
     private static BlockPattern smallPortalShape;
 
     /**
@@ -29,7 +24,6 @@ public class EndPortalFrameBlockMixin {
      * >?<
      * ?^?
      */
-    @Unique
     public static BlockPattern getOrCreateSmallPortalShape() {
         if (smallPortalShape == null) {
             smallPortalShape = BlockPatternBuilder.start()

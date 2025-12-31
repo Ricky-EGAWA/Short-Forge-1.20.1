@@ -10,6 +10,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.EndPortalFrameBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.pattern.BlockPattern;
+import com.ricky.totem.util.EndPortalHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -60,7 +61,7 @@ public class EnderEyeItemMixin {
             }
 
             // 小さい1x1パターンをチェック
-            BlockPattern.BlockPatternMatch smallMatch = EndPortalFrameBlockMixin.getOrCreateSmallPortalShape().find(level, blockpos);
+            BlockPattern.BlockPatternMatch smallMatch = EndPortalHelper.getOrCreateSmallPortalShape().find(level, blockpos);
             if (smallMatch != null) {
                 // 1x1ポータルを生成
                 BlockPos portalPos = smallMatch.getFrontTopLeft().offset(-1, 0, -1);
