@@ -24,7 +24,7 @@ public class DonaldOuterLayer<T extends DonaldEntity, M extends EntityModel<T>> 
 
     public DonaldOuterLayer(RenderLayerParent<T, M> parent, EntityModelSet modelSet) {
         super(parent);
-        this.outerModel = new PlayerModel<>(modelSet.bakeLayer(ModelLayers.PLAYER_OUTER_ARMOR), false);
+        this.outerModel = new PlayerModel<>(modelSet.bakeLayer(ModelLayers.PLAYER), false);
     }
 
     @Override

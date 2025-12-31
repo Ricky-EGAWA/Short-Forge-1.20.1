@@ -24,7 +24,7 @@ public class NotchOuterLayer<T extends NotchEntity, M extends EntityModel<T>> ex
 
     public NotchOuterLayer(RenderLayerParent<T, M> parent, EntityModelSet modelSet) {
         super(parent);
-        this.outerModel = new PlayerModel<>(modelSet.bakeLayer(ModelLayers.PLAYER_OUTER_ARMOR), false);
+        this.outerModel = new PlayerModel<>(modelSet.bakeLayer(ModelLayers.PLAYER), false);
     }
 
     @Override
