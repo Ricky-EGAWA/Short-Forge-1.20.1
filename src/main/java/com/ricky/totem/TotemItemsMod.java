@@ -75,6 +75,9 @@ public class TotemItemsMod {
                 ItemBlockRenderTypes.setRenderLayer(ModBlocks.FAKE_IRON_DOOR.get(), RenderType.cutout());
                 ItemBlockRenderTypes.setRenderLayer(ModBlocks.FAKE_IRON_TRAPDOOR.get(), RenderType.cutout());
 
+                // 床はしごの透明部分を正しく表示するため
+                ItemBlockRenderTypes.setRenderLayer(ModBlocks.GROUND_LADDER.get(), RenderType.cutout());
+
                 // 逆水ブロックの描画設定
                 ItemBlockRenderTypes.setRenderLayer(ModFluids.SOURCE_REVERSE_WATER.get(), RenderType.translucent());
                 ItemBlockRenderTypes.setRenderLayer(ModFluids.FLOWING_REVERSE_WATER.get(), RenderType.translucent());
