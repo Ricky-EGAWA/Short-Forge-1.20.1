@@ -18,7 +18,7 @@ import net.minecraft.resources.ResourceLocation;
 public class DonaldOuterLayer<T extends DonaldEntity, M extends EntityModel<T>> extends RenderLayer<T, M> {
 
     private static final ResourceLocation DONALD_OUTER_TEXTURE =
-            new ResourceLocation(TotemItemsMod.MOD_ID, "textures/entity/skin/donald_outer.png");
+            new ResourceLocation(TotemItemsMod.MOD_ID, "textures/entity/skin/donald.png");
 
     private final PlayerModel<T> outerModel;
 
