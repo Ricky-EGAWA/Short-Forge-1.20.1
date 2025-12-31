@@ -7,9 +7,9 @@ import net.minecraft.world.level.Level;
 /**
  * ミニーエンティティ - ハスクと同様のモブ
  */
-public class MinnieEntity extends Husk {
+public class NotchEntity extends Husk {
 
-    public MinnieEntity(EntityType<? extends Husk> entityType, Level level) {
+    public NotchEntity(EntityType<? extends Husk> entityType, Level level) {
         super(entityType, level);
     }
 }

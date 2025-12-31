@@ -3,7 +3,7 @@ package com.ricky.totem;
 import com.mojang.logging.LogUtils;
 import com.ricky.totem.block.ModBlocks;
 import com.ricky.totem.client.renderer.DonaldRenderer;
-import com.ricky.totem.client.renderer.MinnieRenderer;
+import com.ricky.totem.client.renderer.NotchRenderer;
 import com.ricky.totem.entity.ModEntities;
 import com.ricky.totem.fluid.ModFluidTypes;
 import com.ricky.totem.fluid.ModFluids;
@@ -57,7 +57,7 @@ public class TotemItemsMod {
 
     private void registerEntityAttributes(EntityAttributeCreationEvent event) {
         event.put(ModEntities.DONALD.get(), Zombie.createAttributes().build());
-        event.put(ModEntities.MINNIE.get(), Zombie.createAttributes().build());
+        event.put(ModEntities.NOTCH.get(), Zombie.createAttributes().build());
     }
 
     private void commonSetup(final FMLCommonSetupEvent event) {
@@ -98,7 +98,7 @@ public class TotemItemsMod {
         public static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
             event.registerEntityRenderer(ModEntities.REVERSE_FALLING_BLOCK.get(), FallingBlockRenderer::new);
             event.registerEntityRenderer(ModEntities.DONALD.get(), DonaldRenderer::new);
-            event.registerEntityRenderer(ModEntities.MINNIE.get(), MinnieRenderer::new);
+            event.registerEntityRenderer(ModEntities.NOTCH.get(), NotchRenderer::new);
         }
     }
 }
