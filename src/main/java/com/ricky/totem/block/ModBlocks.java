@@ -79,6 +79,10 @@ public class ModBlocks {
     public static final RegistryObject<Block> CEILING_TORCH = registerBlock("ceiling_torch",
             () -> new CeilingTorchBlock(BlockBehaviour.Properties.copy(Blocks.TORCH)));
 
+    // 地面に設置できるはしご
+    public static final RegistryObject<Block> GROUND_LADDER = registerBlock("ground_ladder",
+            () -> new GroundLadderBlock(BlockBehaviour.Properties.copy(Blocks.LADDER)));
+
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block) {
         RegistryObject<T> toReturn = BLOCKS.register(name, block);
         registerBlockItem(name, toReturn);

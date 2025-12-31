@@ -89,6 +89,7 @@ public class ModCreativeModTabs {
                         pOutput.accept(ModBlocks.REVERSE_GRAVEL.get());
                         pOutput.accept(ModItems.REVERSE_WATER_BUCKET.get());
                         pOutput.accept(ModBlocks.CEILING_TORCH.get());
+                        pOutput.accept(ModBlocks.GROUND_LADDER.get());
                     })
                     .build());
 

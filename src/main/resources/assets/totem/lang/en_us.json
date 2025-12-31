@@ -40,6 +40,7 @@
   "block.totem.reverse_water": "Reverse Water",
   "item.totem.reverse_water_bucket": "Reverse Water Bucket",
   "block.totem.ceiling_torch": "Ceiling Torch",
+  "block.totem.ground_ladder": "Ground Ladder",
 
   "creativetab.totem_tab": "Totem",
   "creativetab.edible_tab": "Edible Items",
