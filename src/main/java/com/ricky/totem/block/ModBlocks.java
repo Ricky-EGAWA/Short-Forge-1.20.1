@@ -1,6 +1,7 @@
 package com.ricky.totem.block;
 
 import com.ricky.totem.TotemItemsMod;
+import com.ricky.totem.fluid.ModFluids;
 import com.ricky.totem.item.EdibleBlockItem;
 import com.ricky.totem.item.ModFoodProperties;
 import com.ricky.totem.item.ModItems;
@@ -8,7 +9,11 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.DoorBlock;
+import net.minecraft.world.level.block.LiquidBlock;
+import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -34,6 +39,49 @@ public class ModBlocks {
             () -> new Block(BlockBehaviour.Properties.copy(Blocks.STONE)));
     public static final RegistryObject<Block> STONE143 = registerBlock("stone143",
             () -> new Block(BlockBehaviour.Properties.copy(Blocks.STONE)));
+
+    public static final RegistryObject<Block> MAGMA_STONE = registerBlock("magma_stone",
+            () -> new Block(BlockBehaviour.Properties.copy(Blocks.STONE)));
+
+    // 岩盤の見た目、石の性質
+    public static final RegistryObject<Block> BEDROCK_STONE = registerBlock("bedrock_stone",
+            () -> new Block(BlockBehaviour.Properties.copy(Blocks.STONE)));
+
+    // 鉄のドアの見た目、オークのドアの性質
+    public static final RegistryObject<Block> FAKE_IRON_DOOR = registerBlock("fake_iron_door",
+            () -> new DoorBlock(BlockBehaviour.Properties.copy(Blocks.OAK_DOOR).noOcclusion(), BlockSetType.OAK));
+
+    // 鉄のトラップドアの見た目、オークのトラップドアの性質
+    public static final RegistryObject<Block> FAKE_IRON_TRAPDOOR = registerBlock("fake_iron_trapdoor",
+            () -> new TrapDoorBlock(BlockBehaviour.Properties.copy(Blocks.OAK_TRAPDOOR).noOcclusion(), BlockSetType.OAK));
+
+    // 砂の見た目、土の性質
+    public static final RegistryObject<Block> SAND_DIRT = registerBlock("sand_dirt",
+            () -> new Block(BlockBehaviour.Properties.copy(Blocks.DIRT)));
+
+    // 砂利の見た目、土の性質
+    public static final RegistryObject<Block> GRAVEL_DIRT = registerBlock("gravel_dirt",
+            () -> new Block(BlockBehaviour.Properties.copy(Blocks.DIRT)));
+
+    // 上に落ちる砂
+    public static final RegistryObject<Block> REVERSE_SAND = registerBlock("reverse_sand",
+            () -> new ReverseFallingBlock(BlockBehaviour.Properties.copy(Blocks.SAND)));
+
+    // 上に落ちる砂利
+    public static final RegistryObject<Block> REVERSE_GRAVEL = registerBlock("reverse_gravel",
+            () -> new ReverseFallingBlock(BlockBehaviour.Properties.copy(Blocks.GRAVEL)));
+
+    // 上に流れる水ブロック
+    public static final RegistryObject<LiquidBlock> REVERSE_WATER_BLOCK = BLOCKS.register("reverse_water_block",
+            () -> new LiquidBlock(ModFluids.SOURCE_REVERSE_WATER, BlockBehaviour.Properties.copy(Blocks.WATER)));
+
+    // 天井に設置できる松明
+    public static final RegistryObject<Block> CEILING_TORCH = registerBlock("ceiling_torch",
+            () -> new CeilingTorchBlock(BlockBehaviour.Properties.copy(Blocks.TORCH)));
+
+    // 地面に設置できるはしご
+    public static final RegistryObject<Block> GROUND_LADDER = registerBlock("ground_ladder",
+            () -> new GroundLadderBlock(BlockBehaviour.Properties.copy(Blocks.LADDER)));
 
     private static <T extends Block> RegistryObject<T> registerBlock(String name, Supplier<T> block) {
         RegistryObject<T> toReturn = BLOCKS.register(name, block);

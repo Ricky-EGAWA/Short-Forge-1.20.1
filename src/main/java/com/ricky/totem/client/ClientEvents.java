@@ -9,6 +9,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.api.distmarker.Dist;
@@ -54,6 +55,7 @@ public class ClientEvents extends RenderStateShard {
         }
 
         TextureAtlasSprite textureSprite = null;
+        int colorR = 148, colorG = 148, colorB = 148; // デフォルトの暗さ
 
         // 石テクスチャの地図かチェック
         if (stack.getTag().getBoolean("StoneTextured")) {
@@ -68,6 +70,188 @@ public class ClientEvents extends RenderStateShard {
                 .getBlockRenderer()
                 .getBlockModel(Blocks.NETHERRACK.defaultBlockState())
                 .getParticleIcon();
+        }
+        // 草ブロックテクスチャの地図かチェック（上面テクスチャを直接取得）
+        else if (stack.getTag().getBoolean("GrassTextured")) {
+            textureSprite = Minecraft.getInstance()
+                .getTextureAtlas(InventoryMenu.BLOCK_ATLAS)
+                .apply(new ResourceLocation("minecraft", "block/grass_block_top"));
+            // 草の緑色のティント
+            colorR = 100; colorG = 148; colorB = 80;
+        }
+        // 溶岩テクスチャの地図かチェック（明るくする）
+        else if (stack.getTag().getBoolean("LavaTextured")) {
+            textureSprite = Minecraft.getInstance()
+                .getTextureAtlas(InventoryMenu.BLOCK_ATLAS)
+                .apply(new ResourceLocation("minecraft", "block/lava_still"));
+            // 溶岩は明るく
+            colorR = 255; colorG = 255; colorB = 255;
+        }
+        // 水テクスチャの地図かチェック（青色ティント）
+        else if (stack.getTag().getBoolean("WaterTextured")) {
+            textureSprite = Minecraft.getInstance()
+                .getTextureAtlas(InventoryMenu.BLOCK_ATLAS)
+                .apply(new ResourceLocation("minecraft", "block/water_still"));
+            // 平原の水の青色ティント
+            colorR = 63; colorG = 118; colorB = 228;
+        }
+        // オークの板材テクスチャの地図かチェック
+        else if (stack.getTag().getBoolean("OakPlanksTextured")) {
+            textureSprite = Minecraft.getInstance()
+                .getBlockRenderer()
+                .getBlockModel(Blocks.OAK_PLANKS.defaultBlockState())
+                .getParticleIcon();
+        }
+        // 砂岩背景の石の感圧版テクスチャの地図かチェック（特別な2層レンダリング）
+        else if (stack.getTag().getBoolean("SandstonePressurePlateTextured")) {
+            // 特別な処理：砂岩の上に石の感圧版を描画
+            event.setCanceled(true);
+
+            PoseStack poseStack = event.getPoseStack();
+            MultiBufferSource bufferSource = event.getMultiBufferSource();
+            int combinedLight = event.getPackedLight();
+
+            poseStack.pushPose();
+            poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
+            poseStack.scale(0.0078125F, 0.0078125F, 0.0078125F);
+
+            // 砂岩のテクスチャを取得
+            TextureAtlasSprite sandstoneSprite = Minecraft.getInstance()
+                .getTextureAtlas(InventoryMenu.BLOCK_ATLAS)
+                .apply(new ResourceLocation("minecraft", "block/sandstone_top"));
+            // 石の感圧版のテクスチャを取得
+            TextureAtlasSprite pressurePlateSprite = Minecraft.getInstance()
+                .getBlockRenderer()
+                .getBlockModel(Blocks.STONE_PRESSURE_PLATE.defaultBlockState())
+                .getParticleIcon();
+
+            // まず砂岩を背景として描画（明るめに）
+            renderBlockTexture(poseStack, bufferSource, combinedLight, sandstoneSprite, 230, 230, 230);
+            // その上に中央に石の感圧版を描画（14/16サイズ）
+            renderCenteredTexture(poseStack, bufferSource, combinedLight, pressurePlateSprite, 230, 230, 230);
+
+            poseStack.popPose();
+            return; // 通常のレンダリング処理をスキップ
+        }
+        // TNT側面テクスチャの地図かチェック
+        else if (stack.getTag().getBoolean("TntSideTextured")) {
+            textureSprite = Minecraft.getInstance()
+                .getBlockRenderer()
+                .getBlockModel(Blocks.TNT.defaultBlockState())
+                .getParticleIcon();
+        }
+        // スライムブロックテクスチャの地図かチェック（特別な2層レンダリング）
+        else if (stack.getTag().getBoolean("SlimeTextured")) {
+            // 特別な処理：外枠と内側コアを描画
+            event.setCanceled(true);
+
+            PoseStack poseStack = event.getPoseStack();
+            MultiBufferSource bufferSource = event.getMultiBufferSource();
+            int combinedLight = event.getPackedLight();
+
+            poseStack.pushPose();
+            poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
+            poseStack.scale(0.0078125F, 0.0078125F, 0.0078125F);
+
+            // スライムブロックのテクスチャを取得
+            TextureAtlasSprite slimeSprite = Minecraft.getInstance()
+                .getBlockRenderer()
+                .getBlockModel(Blocks.SLIME_BLOCK.defaultBlockState())
+                .getParticleIcon();
+
+            // まず外枠として全体を描画（半透明の明るい緑）
+            renderBlockTexture(poseStack, bufferSource, combinedLight, slimeSprite, 180, 230, 180);
+            // その上に中央に内側コアを描画（8/16サイズ、より明るい緑）
+            renderSlimeCore(poseStack, bufferSource, combinedLight, slimeSprite, 230, 255, 230);
+
+            poseStack.popPose();
+            return; // 通常のレンダリング処理をスキップ
+        }
+        // 黒テクスチャの地図かチェック
+        else if (stack.getTag().getBoolean("BlackTextured")) {
+            textureSprite = Minecraft.getInstance()
+                .getBlockRenderer()
+                .getBlockModel(Blocks.BLACK_CONCRETE.defaultBlockState())
+                .getParticleIcon();
+        }
+        // ネザーポータルテクスチャの地図かチェック
+        else if (stack.getTag().getBoolean("NetherPortalTextured")) {
+            textureSprite = Minecraft.getInstance()
+                .getBlockRenderer()
+                .getBlockModel(Blocks.NETHER_PORTAL.defaultBlockState())
+                .getParticleIcon();
+        }
+        // エンドポータルテクスチャの地図かチェック（特別なレンダリング）
+        else if (stack.getTag().getBoolean("EndPortalTextured")) {
+            // 開通したエンドポータルの見た目を再現（entity/end_portal.pngを使用）
+            event.setCanceled(true);
+
+            PoseStack poseStack = event.getPoseStack();
+            MultiBufferSource bufferSource = event.getMultiBufferSource();
+            int combinedLight = event.getPackedLight();
+
+            poseStack.pushPose();
+            poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
+            poseStack.scale(0.0078125F, 0.0078125F, 0.0078125F);
+
+            // エンドポータルテクスチャを直接描画
+            renderEndPortalTexture(poseStack, bufferSource, combinedLight);
+
+            poseStack.popPose();
+            return;
+        }
+        // ダイヤモンド鉱石テクスチャの地図かチェック
+        else if (stack.getTag().getBoolean("DiamondOreTextured")) {
+            textureSprite = Minecraft.getInstance()
+                .getBlockRenderer()
+                .getBlockModel(Blocks.DIAMOND_ORE.defaultBlockState())
+                .getParticleIcon();
+        }
+        // ダイヤモンドブロックテクスチャの地図かチェック
+        else if (stack.getTag().getBoolean("DiamondBlockTextured")) {
+            textureSprite = Minecraft.getInstance()
+                .getBlockRenderer()
+                .getBlockModel(Blocks.DIAMOND_BLOCK.defaultBlockState())
+                .getParticleIcon();
+        }
+        // 黒曜石テクスチャの地図かチェック
+        else if (stack.getTag().getBoolean("ObsidianTextured")) {
+            textureSprite = Minecraft.getInstance()
+                .getBlockRenderer()
+                .getBlockModel(Blocks.OBSIDIAN.defaultBlockState())
+                .getParticleIcon();
+        }
+        // 石ブロック背景のはしごテクスチャの地図かチェック（特別な2層レンダリング）
+        else if (stack.getTag().getBoolean("StoneLadderTextured")) {
+            // 特別な処理：石の上にはしごを描画
+            event.setCanceled(true);
+
+            PoseStack poseStack = event.getPoseStack();
+            MultiBufferSource bufferSource = event.getMultiBufferSource();
+            int combinedLight = event.getPackedLight();
+
+            poseStack.pushPose();
+            poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
+            poseStack.scale(0.0078125F, 0.0078125F, 0.0078125F);
+
+            // 石のテクスチャを取得
+            TextureAtlasSprite stoneSprite = Minecraft.getInstance()
+                .getBlockRenderer()
+                .getBlockModel(Blocks.STONE.defaultBlockState())
+                .getParticleIcon();
+            // はしごのテクスチャを取得
+            TextureAtlasSprite ladderSprite = Minecraft.getInstance()
+                .getBlockRenderer()
+                .getBlockModel(Blocks.LADDER.defaultBlockState())
+                .getParticleIcon();
+
+            // まず石を背景として描画
+            renderBlockTexture(poseStack, bufferSource, combinedLight, stoneSprite, 148, 148, 148);
+            // その上にはしごを描画（全面サイズ、明るめ）
+            renderOverlayTexture(poseStack, bufferSource, combinedLight, ladderSprite, 230, 230, 230);
+
+            poseStack.popPose();
+            return; // 通常のレンダリング処理をスキップ
         }
 
         // カスタムテクスチャがある場合はレンダリング
@@ -86,13 +270,13 @@ public class ClientEvents extends RenderStateShard {
             poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
             poseStack.scale(0.0078125F, 0.0078125F, 0.0078125F); // 128分の1（地図サイズ）
 
-            renderBlockTexture(poseStack, bufferSource, combinedLight, textureSprite);
+            renderBlockTexture(poseStack, bufferSource, combinedLight, textureSprite, colorR, colorG, colorB);
 
             poseStack.popPose();
         }
     }
 
-    private static void renderBlockTexture(PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, TextureAtlasSprite textureSprite) {
+    private static void renderBlockTexture(PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, TextureAtlasSprite textureSprite, int r, int g, int b) {
         Matrix4f matrix4f = poseStack.last().pose();
         // カリングを有効にしたカスタムRenderTypeを使用（裏側から見ると透明になる）
         VertexConsumer vertexConsumer = bufferSource.getBuffer(MAP_TEXTURE_CULLED);
@@ -107,13 +291,91 @@ public class ClientEvents extends RenderStateShard {
         float max = 64.0F;
         float z = -0.01F;
 
-        // 暗い色で描画（128/255 = 約50%の明るさ）
-        int darkness = 148;
-
         // 4つの頂点で四角形を描画（地図と同じサイズ）
-        vertexConsumer.vertex(matrix4f, min, max, z).color(darkness, darkness, darkness, 255).uv(minU, maxV).uv2(combinedLight).endVertex();
-        vertexConsumer.vertex(matrix4f, max, max, z).color(darkness, darkness, darkness, 255).uv(maxU, maxV).uv2(combinedLight).endVertex();
-        vertexConsumer.vertex(matrix4f, max, min, z).color(darkness, darkness, darkness, 255).uv(maxU, minV).uv2(combinedLight).endVertex();
-        vertexConsumer.vertex(matrix4f, min, min, z).color(darkness, darkness, darkness, 255).uv(minU, minV).uv2(combinedLight).endVertex();
+        vertexConsumer.vertex(matrix4f, min, max, z).color(r, g, b, 255).uv(minU, maxV).uv2(combinedLight).endVertex();
+        vertexConsumer.vertex(matrix4f, max, max, z).color(r, g, b, 255).uv(maxU, maxV).uv2(combinedLight).endVertex();
+        vertexConsumer.vertex(matrix4f, max, min, z).color(r, g, b, 255).uv(maxU, minV).uv2(combinedLight).endVertex();
+        vertexConsumer.vertex(matrix4f, min, min, z).color(r, g, b, 255).uv(minU, minV).uv2(combinedLight).endVertex();
+    }
+
+    // 中央に小さくテクスチャを描画（砂岩背景の石の感圧版用）
+    private static void renderCenteredTexture(PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, TextureAtlasSprite textureSprite, int r, int g, int b) {
+        Matrix4f matrix4f = poseStack.last().pose();
+        VertexConsumer vertexConsumer = bufferSource.getBuffer(MAP_TEXTURE_CULLED);
+
+        float minU = textureSprite.getU0();
+        float maxU = textureSprite.getU1();
+        float minV = textureSprite.getV0();
+        float maxV = textureSprite.getV1();
+
+        // 中央に描画（14/16サイズ = 112ピクセル幅）
+        float min = -56.0F;  // 128 * 14/16 / 2 = 56
+        float max = 56.0F;
+        float z = -0.02F;    // 砂岩より手前に描画
+
+        vertexConsumer.vertex(matrix4f, min, max, z).color(r, g, b, 255).uv(minU, maxV).uv2(combinedLight).endVertex();
+        vertexConsumer.vertex(matrix4f, max, max, z).color(r, g, b, 255).uv(maxU, maxV).uv2(combinedLight).endVertex();
+        vertexConsumer.vertex(matrix4f, max, min, z).color(r, g, b, 255).uv(maxU, minV).uv2(combinedLight).endVertex();
+        vertexConsumer.vertex(matrix4f, min, min, z).color(r, g, b, 255).uv(minU, minV).uv2(combinedLight).endVertex();
+    }
+
+    // スライムブロックの内側コアを描画（8/16サイズ）
+    private static void renderSlimeCore(PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, TextureAtlasSprite textureSprite, int r, int g, int b) {
+        Matrix4f matrix4f = poseStack.last().pose();
+        VertexConsumer vertexConsumer = bufferSource.getBuffer(MAP_TEXTURE_CULLED);
+
+        float minU = textureSprite.getU0();
+        float maxU = textureSprite.getU1();
+        float minV = textureSprite.getV0();
+        float maxV = textureSprite.getV1();
+
+        // 中央に描画（8/16サイズ = 64ピクセル幅）
+        float min = -32.0F;  // 128 * 8/16 / 2 = 32
+        float max = 32.0F;
+        float z = -0.02F;    // 外枠より手前に描画
+
+        vertexConsumer.vertex(matrix4f, min, max, z).color(r, g, b, 255).uv(minU, maxV).uv2(combinedLight).endVertex();
+        vertexConsumer.vertex(matrix4f, max, max, z).color(r, g, b, 255).uv(maxU, maxV).uv2(combinedLight).endVertex();
+        vertexConsumer.vertex(matrix4f, max, min, z).color(r, g, b, 255).uv(maxU, minV).uv2(combinedLight).endVertex();
+        vertexConsumer.vertex(matrix4f, min, min, z).color(r, g, b, 255).uv(minU, minV).uv2(combinedLight).endVertex();
+    }
+
+    // オーバーレイテクスチャを描画（はしごなど、全面サイズで石の上に描画）
+    private static void renderOverlayTexture(PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight, TextureAtlasSprite textureSprite, int r, int g, int b) {
+        Matrix4f matrix4f = poseStack.last().pose();
+        VertexConsumer vertexConsumer = bufferSource.getBuffer(MAP_TEXTURE_CULLED);
+
+        float minU = textureSprite.getU0();
+        float maxU = textureSprite.getU1();
+        float minV = textureSprite.getV0();
+        float maxV = textureSprite.getV1();
+
+        // 全面サイズで描画
+        float min = -64.0F;
+        float max = 64.0F;
+        float z = -0.02F;    // 背景より手前に描画
+
+        vertexConsumer.vertex(matrix4f, min, max, z).color(r, g, b, 255).uv(minU, maxV).uv2(combinedLight).endVertex();
+        vertexConsumer.vertex(matrix4f, max, max, z).color(r, g, b, 255).uv(maxU, maxV).uv2(combinedLight).endVertex();
+        vertexConsumer.vertex(matrix4f, max, min, z).color(r, g, b, 255).uv(maxU, minV).uv2(combinedLight).endVertex();
+        vertexConsumer.vertex(matrix4f, min, min, z).color(r, g, b, 255).uv(minU, minV).uv2(combinedLight).endVertex();
+    }
+
+    // エンドポータルテクスチャを描画（RenderType.endPortal()を使用）
+    private static void renderEndPortalTexture(PoseStack poseStack, MultiBufferSource bufferSource, int combinedLight) {
+        Matrix4f matrix4f = poseStack.last().pose();
+        // MinecraftのエンドポータルRenderTypeを使用
+        VertexConsumer vertexConsumer = bufferSource.getBuffer(RenderType.endPortal());
+
+        // 128x128ピクセルの地図サイズでテクスチャを描画
+        float min = -64.0F;
+        float max = 64.0F;
+        float z = -0.01F;
+
+        // RenderType.endPortal()はPOSITIONのみを使用
+        vertexConsumer.vertex(matrix4f, min, max, z).endVertex();
+        vertexConsumer.vertex(matrix4f, max, max, z).endVertex();
+        vertexConsumer.vertex(matrix4f, max, min, z).endVertex();
+        vertexConsumer.vertex(matrix4f, min, min, z).endVertex();
     }
 }

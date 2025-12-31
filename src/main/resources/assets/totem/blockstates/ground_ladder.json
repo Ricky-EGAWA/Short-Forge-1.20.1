@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": {"model": "totem:block/ground_ladder", "y": 0},
+    "facing=south": {"model": "totem:block/ground_ladder", "y": 180},
+    "facing=west": {"model": "totem:block/ground_ladder", "y": 270},
+    "facing=east": {"model": "totem:block/ground_ladder", "y": 90}
+  }
+}

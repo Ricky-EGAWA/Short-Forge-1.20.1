@@ -32,9 +32,8 @@ public abstract class ItemFrameRendererMixin<T extends ItemFrame> {
                           MultiBufferSource buffer, int packedLight, CallbackInfo ci) {
         ItemStack stack = itemFrame.getItem();
 
-        // 石テクスチャまたはネザーラックテクスチャの地図かチェック
-        if (stack.hasTag() &&
-                (stack.getTag().getBoolean("StoneTextured") || stack.getTag().getBoolean("NetherrackTextured"))) {
+        // テクスチャ地図かチェック（すべてのテクスチャ地図タグを確認）
+        if (stack.hasTag() && isTexturedMap(stack)) {
 
             // カメラの位置を取得
             Vec3 cameraPos = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
@@ -57,5 +56,29 @@ public abstract class ItemFrameRendererMixin<T extends ItemFrame> {
                 ci.cancel();
             }
         }
+    }
+
+    /**
+     * スタックがテクスチャ地図かどうかをチェック
+     */
+    private boolean isTexturedMap(ItemStack stack) {
+        if (!stack.hasTag()) return false;
+        var tag = stack.getTag();
+        return tag.getBoolean("StoneTextured") ||
+               tag.getBoolean("NetherrackTextured") ||
+               tag.getBoolean("GrassTextured") ||
+               tag.getBoolean("LavaTextured") ||
+               tag.getBoolean("WaterTextured") ||
+               tag.getBoolean("OakPlanksTextured") ||
+               tag.getBoolean("SandstonePressurePlateTextured") ||
+               tag.getBoolean("TntSideTextured") ||
+               tag.getBoolean("SlimeTextured") ||
+               tag.getBoolean("BlackTextured") ||
+               tag.getBoolean("NetherPortalTextured") ||
+               tag.getBoolean("EndPortalTextured") ||
+               tag.getBoolean("DiamondOreTextured") ||
+               tag.getBoolean("DiamondBlockTextured") ||
+               tag.getBoolean("ObsidianTextured") ||
+               tag.getBoolean("StoneLadderTextured");
     }
 }

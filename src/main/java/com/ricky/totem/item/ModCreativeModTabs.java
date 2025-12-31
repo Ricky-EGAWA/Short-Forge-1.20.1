@@ -3,6 +3,7 @@ package com.ricky.totem.item;
 import com.ricky.totem.TotemItemsMod;
 import com.ricky.totem.block.ModBlocks;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
@@ -42,6 +43,30 @@ public class ModCreativeModTabs {
                     .displayItems((pParameters, pOutput) -> {
                         pOutput.accept(ModItems.STONE_TEXTURED_MAP.get());
                         pOutput.accept(ModItems.NETHERRACK_TEXTURED_MAP.get());
+                        pOutput.accept(ModItems.GRASS_TEXTURED_MAP.get());
+                        pOutput.accept(ModItems.LAVA_TEXTURED_MAP.get());
+                        pOutput.accept(ModItems.WATER_TEXTURED_MAP.get());
+                        pOutput.accept(ModItems.OAK_PLANKS_TEXTURED_MAP.get());
+                        pOutput.accept(ModItems.SANDSTONE_PRESSURE_PLATE_TEXTURED_MAP.get());
+                        pOutput.accept(ModItems.TNT_SIDE_TEXTURED_MAP.get());
+                        pOutput.accept(ModItems.SLIME_TEXTURED_MAP.get());
+                        pOutput.accept(ModItems.BLACK_TEXTURED_MAP.get());
+                        pOutput.accept(ModItems.NETHER_PORTAL_TEXTURED_MAP.get());
+                        pOutput.accept(ModItems.END_PORTAL_TEXTURED_MAP.get());
+                        pOutput.accept(ModItems.DIAMOND_ORE_TEXTURED_MAP.get());
+                        pOutput.accept(ModItems.DIAMOND_BLOCK_TEXTURED_MAP.get());
+                        pOutput.accept(ModItems.OBSIDIAN_TEXTURED_MAP.get());
+                        pOutput.accept(ModItems.STONE_LADDER_TEXTURED_MAP.get());
+                        // 透明な額縁
+                        ItemStack invisibleFrame = new ItemStack(Items.ITEM_FRAME);
+                        CompoundTag entityTag = new CompoundTag();
+                        entityTag.putBoolean("Invisible", true);
+
+                        CompoundTag tag = new CompoundTag();
+                        tag.put("EntityTag", entityTag);
+                        invisibleFrame.setTag(tag);
+
+                        pOutput.accept(invisibleFrame);
                     })
                     .build());
 
@@ -54,6 +79,17 @@ public class ModCreativeModTabs {
                         pOutput.accept(ModBlocks.STONE116.get());
                         pOutput.accept(ModBlocks.STONE127.get());
                         pOutput.accept(ModBlocks.STONE143.get());
+                        pOutput.accept(ModBlocks.MAGMA_STONE.get());
+                        pOutput.accept(ModBlocks.BEDROCK_STONE.get());
+                        pOutput.accept(ModBlocks.FAKE_IRON_DOOR.get());
+                        pOutput.accept(ModBlocks.FAKE_IRON_TRAPDOOR.get());
+                        pOutput.accept(ModBlocks.SAND_DIRT.get());
+                        pOutput.accept(ModBlocks.GRAVEL_DIRT.get());
+                        pOutput.accept(ModBlocks.REVERSE_SAND.get());
+                        pOutput.accept(ModBlocks.REVERSE_GRAVEL.get());
+                        pOutput.accept(ModItems.REVERSE_WATER_BUCKET.get());
+                        pOutput.accept(ModBlocks.CEILING_TORCH.get());
+                        pOutput.accept(ModBlocks.GROUND_LADDER.get());
                     })
                     .build());
 

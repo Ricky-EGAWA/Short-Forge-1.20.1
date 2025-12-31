@@ -1,4 +1,4 @@
-package com.ricky.totem.item;
+package com.ricky.totem.item.mapitem;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
@@ -10,16 +10,16 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.material.MapColor;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 
-public class NetherrackTexturedMapItem extends MapItem {
+public class SandstonePressurePlateTexturedMapItem extends MapItem {
 
-    public NetherrackTexturedMapItem(Properties properties) {
+    public SandstonePressurePlateTexturedMapItem(Properties properties) {
         super(properties);
     }
 
     @Override
     public ItemStack getDefaultInstance() {
         ItemStack stack = super.getDefaultInstance();
-        stack.getOrCreateTag().putBoolean("NetherrackTextured", true);
+        stack.getOrCreateTag().putBoolean("SandstonePressurePlateTextured", true);
         return stack;
     }
 
@@ -28,10 +28,8 @@ public class NetherrackTexturedMapItem extends MapItem {
         ItemStack itemStack = player.getItemInHand(hand);
 
         if (!level.isClientSide) {
-            // NetherrackTexturedタグを確実に設定
-            itemStack.getOrCreateTag().putBoolean("NetherrackTextured", true);
+            itemStack.getOrCreateTag().putBoolean("SandstonePressurePlateTextured", true);
 
-            // 地図IDがない場合は作成
             if (!itemStack.hasTag() || !itemStack.getTag().contains("map")) {
                 createMapData(itemStack, level);
             }
@@ -49,11 +47,9 @@ public class NetherrackTexturedMapItem extends MapItem {
 
     private void createMapData(ItemStack stack, Level level) {
         if (level instanceof ServerLevel serverLevel) {
-            // 新しい地図IDを作成
             Integer mapId = level.getFreeMapId();
             String mapName = MapItem.makeKey(mapId);
 
-            // 地図データを作成
             MapItemSavedData data = MapItemSavedData.createFresh(
                 serverLevel.getSharedSpawnPos().getX(),
                 serverLevel.getSharedSpawnPos().getZ(),
@@ -63,46 +59,51 @@ public class NetherrackTexturedMapItem extends MapItem {
                 serverLevel.dimension()
             );
 
-            // ネザーラックテクスチャで初期化
-            initializeWithNetherrackPattern(data);
+            initializeWithPattern(data);
 
-            // 地図データを保存
             serverLevel.setMapData(mapName, data);
 
-            // アイテムに地図IDを設定し、カスタムマーカーを追加
             stack.getOrCreateTag().putInt("map", mapId);
-            stack.getOrCreateTag().putBoolean("NetherrackTextured", true);
+            stack.getOrCreateTag().putBoolean("SandstonePressurePlateTextured", true);
         }
     }
 
-    private void initializeWithNetherrackPattern(MapItemSavedData data) {
-        // ネザーラックのテクスチャパターンを地図の色で再現
-        // 複数の赤茶色の色調を使用
-        byte[] netherrackColors = new byte[] {
-            (byte)(MapColor.NETHER.id * 4 + 0),  // 最も暗い
-            (byte)(MapColor.NETHER.id * 4 + 1),  // やや暗い
-            (byte)(MapColor.NETHER.id * 4 + 2),  // 通常
-            (byte)(MapColor.NETHER.id * 4 + 3)   // やや明るい
+    private void initializeWithPattern(MapItemSavedData data) {
+        byte[] sandstoneColors = new byte[] {
+            (byte)(MapColor.SAND.id * 4 + 1),
+            (byte)(MapColor.SAND.id * 4 + 2),
+            (byte)(MapColor.SAND.id * 4 + 3)
         };
 
-        // ランダムなパターンでネザーラックのテクスチャを模倣
-        java.util.Random random = new java.util.Random(54321); // 固定シード
+        byte[] stoneColors = new byte[] {
+            (byte)(MapColor.STONE.id * 4 + 0),
+            (byte)(MapColor.STONE.id * 4 + 1),
+            (byte)(MapColor.STONE.id * 4 + 2)
+        };
+
+        java.util.Random random = new java.util.Random(55555);
+
+        int plateStart = 32;
+        int plateEnd = 96;
 
         for (int x = 0; x < 128; x++) {
             for (int z = 0; z < 128; z++) {
-                // ノイズベースのパターンでネザーラックのテクスチャを再現
-                int noiseValue = (int)((Math.sin(x * 0.15) + Math.cos(z * 0.12) + random.nextDouble()) * 1.5);
-                int colorIndex = Math.abs(noiseValue) % netherrackColors.length;
-                data.colors[x + z * 128] = netherrackColors[colorIndex];
+                boolean isPlate = x >= plateStart && x < plateEnd && z >= plateStart && z < plateEnd;
+
+                if (isPlate) {
+                    int noiseValue = (int)(random.nextDouble() * 3);
+                    data.colors[x + z * 128] = stoneColors[noiseValue % stoneColors.length];
+                } else {
+                    int noiseValue = (int)((Math.sin(x * 0.1) + Math.cos(z * 0.1) + random.nextDouble()) * 1.5);
+                    data.colors[x + z * 128] = sandstoneColors[Math.abs(noiseValue) % sandstoneColors.length];
+                }
             }
         }
 
-        // 地図を変更済みとしてマーク
         data.setDirty();
     }
 
     @Override
     public void update(Level level, net.minecraft.world.entity.Entity entity, MapItemSavedData data) {
-        // 更新処理をスキップ（静的な地図）
     }
 }
