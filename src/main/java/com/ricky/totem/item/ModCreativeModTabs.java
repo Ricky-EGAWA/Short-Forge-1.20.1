@@ -3,6 +3,7 @@ package com.ricky.totem.item;
 import com.ricky.totem.TotemItemsMod;
 import com.ricky.totem.block.ModBlocks;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
@@ -56,6 +57,16 @@ public class ModCreativeModTabs {
                         pOutput.accept(ModItems.DIAMOND_BLOCK_TEXTURED_MAP.get());
                         pOutput.accept(ModItems.OBSIDIAN_TEXTURED_MAP.get());
                         pOutput.accept(ModItems.STONE_LADDER_TEXTURED_MAP.get());
+                        // 透明な額縁
+                        ItemStack invisibleFrame = new ItemStack(Items.ITEM_FRAME);
+                        CompoundTag entityTag = new CompoundTag();
+                        entityTag.putBoolean("Invisible", true);
+
+                        CompoundTag tag = new CompoundTag();
+                        tag.put("EntityTag", entityTag);
+                        invisibleFrame.setTag(tag);
+
+                        pOutput.accept(invisibleFrame);
                     })
                     .build());
 
