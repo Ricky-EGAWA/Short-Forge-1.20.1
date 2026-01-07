@@ -2,9 +2,6 @@ package com.ricky.totem.mixin;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.portal.PortalShape;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,7 +18,8 @@ import javax.annotation.Nullable;
  * 通常: 最小2x3、最大21x21
  * 変更後: 最小1x1、最大21x21
  *
- * 黒曜石フレームの検証は維持しつつ、最小サイズの条件だけを変更する
+ * バニラのcalculateBottomLeftによる黒曜石フレームの検証は維持しつつ、
+ * 最小サイズの条件だけを変更する
  */
 @Mixin(PortalShape.class)
 public abstract class PortalShapeMixin {
@@ -43,15 +41,7 @@ public abstract class PortalShapeMixin {
 
     @Shadow
     @Final
-    private BlockGetter level;
-
-    @Shadow
-    @Final
     private Direction rightDir;
-
-    @Shadow
-    @Final
-    private Direction.Axis axis;
 
     @Shadow
     protected abstract int getDistanceUntilEdgeAboveFrame(BlockPos pos, Direction direction);
@@ -97,63 +87,21 @@ public abstract class PortalShapeMixin {
     /**
      * ポータルの有効性チェックを修正
      * 通常は幅>=2、高さ>=3が必要だが、1x1でも有効にする
-     * ただし、黒曜石フレームの検証を追加して維持する
+     * bottomLeftがnullでないことで黒曜石フレームの検証を維持
+     * （バニラのcalculateBottomLeftが黒曜石フレームを見つけた場合のみnull以外を返す）
      */
     @Inject(method = "isValid", at = @At("HEAD"), cancellable = true)
     private void onIsValid(CallbackInfoReturnable<Boolean> cir) {
         // bottomLeftがnullの場合は無効（黒曜石フレームが見つからなかった）
+        // バニラのcalculateBottomLeftは黒曜石フレームを検証してからbottomLeftを設定する
         if (this.bottomLeft == null) {
             cir.setReturnValue(false);
             return;
         }
 
         // サイズチェック: 1x1以上21x21以下
-        if (this.width < 1 || this.width > 21 || this.height < 1 || this.height > 21) {
-            cir.setReturnValue(false);
-            return;
-        }
-
-        // 黒曜石フレームの検証
-        // 下辺の検証
-        for (int x = 0; x < this.width; x++) {
-            BlockPos pos = this.bottomLeft.relative(this.rightDir, x).below();
-            if (!isObsidian(this.level.getBlockState(pos))) {
-                cir.setReturnValue(false);
-                return;
-            }
-        }
-
-        // 上辺の検証
-        for (int x = 0; x < this.width; x++) {
-            BlockPos pos = this.bottomLeft.relative(this.rightDir, x).above(this.height);
-            if (!isObsidian(this.level.getBlockState(pos))) {
-                cir.setReturnValue(false);
-                return;
-            }
-        }
-
-        // 左辺の検証
-        for (int y = 0; y < this.height; y++) {
-            BlockPos pos = this.bottomLeft.above(y).relative(this.rightDir, -1);
-            if (!isObsidian(this.level.getBlockState(pos))) {
-                cir.setReturnValue(false);
-                return;
-            }
-        }
-
-        // 右辺の検証
-        for (int y = 0; y < this.height; y++) {
-            BlockPos pos = this.bottomLeft.above(y).relative(this.rightDir, this.width);
-            if (!isObsidian(this.level.getBlockState(pos))) {
-                cir.setReturnValue(false);
-                return;
-            }
-        }
-
-        cir.setReturnValue(true);
-    }
-
-    private static boolean isObsidian(BlockState state) {
-        return state.is(Blocks.OBSIDIAN);
+        boolean isValid = this.width >= 1 && this.width <= 21
+                && this.height >= 1 && this.height <= 21;
+        cir.setReturnValue(isValid);
     }
 }
