@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
  * 通常: 最小2x3、最大21x21
  * 変更後: 最小1x1、最大21x21
  *
- * 黒曜石フレームの検証を独自に行い、正しいフレームがある場合のみポータルを生成する
+ * 独自のフレーム検証ロジックで黒曜石フレームを完全に検証する
  */
 @Mixin(PortalShape.class)
 public abstract class PortalShapeMixin {
@@ -47,12 +47,6 @@ public abstract class PortalShapeMixin {
     @Final
     private Direction rightDir;
 
-    @Shadow
-    protected abstract int getDistanceUntilEdgeAboveFrame(BlockPos pos, Direction direction);
-
-    @Shadow
-    protected abstract int getDistanceUntilTop(BlockPos.MutableBlockPos pos);
-
     // コンストラクタでキャプチャしたLevelAccessor
     @Unique
     private LevelAccessor totem$capturedLevel;
@@ -68,19 +62,16 @@ public abstract class PortalShapeMixin {
     /**
      * calculateWidthの戻り値を修正
      * 通常は幅<2で0を返すが、幅>=1なら実際の幅を返すようにする
-     * ただし、黒曜石フレームの検証を行う
+     * 独自のフレーム検証を行う
      */
     @Inject(method = "calculateWidth", at = @At("RETURN"), cancellable = true)
     private void onCalculateWidth(CallbackInfoReturnable<Integer> cir) {
-        // 元のメソッドが0を返した場合、実際の幅を再計算
-        if (cir.getReturnValue() == 0 && this.bottomLeft != null) {
-            int actualWidth = this.getDistanceUntilEdgeAboveFrame(this.bottomLeft, this.rightDir);
+        // 元のメソッドが0を返した場合、独自の幅計算を行う
+        if (cir.getReturnValue() == 0 && this.bottomLeft != null && this.totem$capturedLevel != null) {
+            int actualWidth = totem$calculateActualWidth();
             if (actualWidth >= 1 && actualWidth <= 21) {
-                // 下辺のフレームを検証
-                if (totem$validateBottomFrame(actualWidth)) {
-                    this.width = actualWidth;
-                    cir.setReturnValue(actualWidth);
-                }
+                this.width = actualWidth;
+                cir.setReturnValue(actualWidth);
             }
         }
     }
@@ -88,21 +79,16 @@ public abstract class PortalShapeMixin {
     /**
      * calculateHeightの戻り値を修正
      * 通常は高さ<3で0を返すが、高さ>=1なら実際の高さを返すようにする
-     * ただし、黒曜石フレームの検証を行う
+     * 独自のフレーム検証を行う
      */
     @Inject(method = "calculateHeight", at = @At("RETURN"), cancellable = true)
     private void onCalculateHeight(CallbackInfoReturnable<Integer> cir) {
-        // 元のメソッドが0を返した場合、実際の高さを再計算
-        if (cir.getReturnValue() == 0 && this.bottomLeft != null && this.width > 0) {
-            BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
-            mutablePos.set(this.bottomLeft);
-            int actualHeight = this.getDistanceUntilTop(mutablePos);
+        // 元のメソッドが0を返した場合、独自の高さ計算を行う
+        if (cir.getReturnValue() == 0 && this.bottomLeft != null && this.width > 0 && this.totem$capturedLevel != null) {
+            int actualHeight = totem$calculateActualHeight();
             if (actualHeight >= 1 && actualHeight <= 21) {
-                // 上辺と左右のフレームを検証
-                if (totem$validateTopFrame(actualHeight) && totem$validateSideFrames(actualHeight)) {
-                    this.height = actualHeight;
-                    cir.setReturnValue(actualHeight);
-                }
+                this.height = actualHeight;
+                cir.setReturnValue(actualHeight);
             }
         }
     }
@@ -125,66 +111,112 @@ public abstract class PortalShapeMixin {
     }
 
     /**
-     * 下辺のフレーム（黒曜石）を検証
+     * 独自の幅計算
+     * bottomLeftから右方向にスキャンし、下辺と上辺に黒曜石フレームがある幅を計算
      */
     @Unique
-    private boolean totem$validateBottomFrame(int width) {
-        if (this.totem$capturedLevel == null || this.bottomLeft == null) {
-            return false;
+    private int totem$calculateActualWidth() {
+        int maxWidth = 0;
+
+        // 最大21ブロックまでスキャン
+        for (int x = 0; x < 21; x++) {
+            BlockPos currentPos = this.bottomLeft.relative(this.rightDir, x);
+            BlockPos belowPos = currentPos.below();
+
+            // 下のブロックが黒曜石でなければ終了
+            if (!totem$isObsidian(this.totem$capturedLevel.getBlockState(belowPos))) {
+                break;
+            }
+
+            // 現在位置が空気またはポータルでなければ終了（右端の黒曜石に当たった）
+            BlockState currentState = this.totem$capturedLevel.getBlockState(currentPos);
+            if (!totem$isEmpty(currentState)) {
+                break;
+            }
+
+            maxWidth = x + 1;
         }
-        for (int x = 0; x < width; x++) {
-            BlockPos pos = this.bottomLeft.relative(this.rightDir, x).below();
-            if (!totem$isObsidian(this.totem$capturedLevel.getBlockState(pos))) {
-                return false;
+
+        // 右端のフレーム（黒曜石）を確認
+        if (maxWidth > 0) {
+            BlockPos rightFramePos = this.bottomLeft.relative(this.rightDir, maxWidth);
+            if (!totem$isObsidian(this.totem$capturedLevel.getBlockState(rightFramePos))) {
+                return 0; // 右端にフレームがない
             }
         }
-        return true;
+
+        // 左端のフレーム（黒曜石）を確認
+        BlockPos leftFramePos = this.bottomLeft.relative(this.rightDir, -1);
+        if (!totem$isObsidian(this.totem$capturedLevel.getBlockState(leftFramePos))) {
+            return 0; // 左端にフレームがない
+        }
+
+        return maxWidth;
     }
 
     /**
-     * 上辺のフレーム（黒曜石）を検証
+     * 独自の高さ計算
+     * bottomLeftから上方向にスキャンし、左辺と右辺に黒曜石フレームがある高さを計算
      */
     @Unique
-    private boolean totem$validateTopFrame(int height) {
-        if (this.totem$capturedLevel == null || this.bottomLeft == null) {
-            return false;
-        }
-        for (int x = 0; x < this.width; x++) {
-            BlockPos pos = this.bottomLeft.relative(this.rightDir, x).above(height);
-            if (!totem$isObsidian(this.totem$capturedLevel.getBlockState(pos))) {
-                return false;
-            }
-        }
-        return true;
-    }
+    private int totem$calculateActualHeight() {
+        int maxHeight = 0;
 
-    /**
-     * 左右のフレーム（黒曜石）を検証
-     */
-    @Unique
-    private boolean totem$validateSideFrames(int height) {
-        if (this.totem$capturedLevel == null || this.bottomLeft == null) {
-            return false;
+        // 最大21ブロックまでスキャン
+        for (int y = 0; y < 21; y++) {
+            boolean rowValid = true;
+
+            // 各行で、全ての幅について確認
+            for (int x = 0; x < this.width; x++) {
+                BlockPos currentPos = this.bottomLeft.relative(this.rightDir, x).above(y);
+                BlockState currentState = this.totem$capturedLevel.getBlockState(currentPos);
+
+                // 現在位置が空気またはポータルでなければこの行は無効
+                if (!totem$isEmpty(currentState)) {
+                    rowValid = false;
+                    break;
+                }
+            }
+
+            if (!rowValid) {
+                break;
+            }
+
+            // 左辺のフレーム確認
+            BlockPos leftPos = this.bottomLeft.above(y).relative(this.rightDir, -1);
+            if (!totem$isObsidian(this.totem$capturedLevel.getBlockState(leftPos))) {
+                break;
+            }
+
+            // 右辺のフレーム確認
+            BlockPos rightPos = this.bottomLeft.above(y).relative(this.rightDir, this.width);
+            if (!totem$isObsidian(this.totem$capturedLevel.getBlockState(rightPos))) {
+                break;
+            }
+
+            maxHeight = y + 1;
         }
-        // 左辺
-        for (int y = 0; y < height; y++) {
-            BlockPos pos = this.bottomLeft.above(y).relative(this.rightDir, -1);
-            if (!totem$isObsidian(this.totem$capturedLevel.getBlockState(pos))) {
-                return false;
+
+        // 上辺のフレーム（黒曜石）を確認
+        if (maxHeight > 0) {
+            for (int x = 0; x < this.width; x++) {
+                BlockPos topFramePos = this.bottomLeft.relative(this.rightDir, x).above(maxHeight);
+                if (!totem$isObsidian(this.totem$capturedLevel.getBlockState(topFramePos))) {
+                    return 0; // 上辺にフレームがない
+                }
             }
         }
-        // 右辺
-        for (int y = 0; y < height; y++) {
-            BlockPos pos = this.bottomLeft.above(y).relative(this.rightDir, this.width);
-            if (!totem$isObsidian(this.totem$capturedLevel.getBlockState(pos))) {
-                return false;
-            }
-        }
-        return true;
+
+        return maxHeight;
     }
 
     @Unique
     private static boolean totem$isObsidian(BlockState state) {
         return state.is(Blocks.OBSIDIAN);
+    }
+
+    @Unique
+    private static boolean totem$isEmpty(BlockState state) {
+        return state.isAir() || state.is(Blocks.NETHER_PORTAL) || state.is(Blocks.FIRE);
     }
 }
