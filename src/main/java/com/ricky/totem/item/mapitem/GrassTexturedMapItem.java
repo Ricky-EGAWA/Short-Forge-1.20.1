@@ -69,11 +69,12 @@ public class GrassTexturedMapItem extends MapItem {
     }
 
     private void initializeWithPattern(MapItemSavedData data) {
+        // より明るい色のみを使用
         byte[] colors = new byte[] {
-            (byte)(MapColor.GRASS.id * 4 + 0),
-            (byte)(MapColor.GRASS.id * 4 + 1),
             (byte)(MapColor.GRASS.id * 4 + 2),
-            (byte)(MapColor.GRASS.id * 4 + 3)
+            (byte)(MapColor.GRASS.id * 4 + 3),
+            (byte)(MapColor.GRASS.id * 4 + 3),
+            (byte)(MapColor.GRASS.id * 4 + 2)
         };
 
         java.util.Random random = new java.util.Random(11111);

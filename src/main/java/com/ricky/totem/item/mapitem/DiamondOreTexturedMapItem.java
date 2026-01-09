@@ -69,16 +69,17 @@ public class DiamondOreTexturedMapItem extends MapItem {
     }
 
     private void initializeWithPattern(MapItemSavedData data) {
+        // より明るい色のみを使用
         byte[] stoneColors = new byte[] {
-            (byte)(MapColor.STONE.id * 4 + 0),
-            (byte)(MapColor.STONE.id * 4 + 1),
             (byte)(MapColor.STONE.id * 4 + 2),
-            (byte)(MapColor.STONE.id * 4 + 3)
+            (byte)(MapColor.STONE.id * 4 + 3),
+            (byte)(MapColor.STONE.id * 4 + 3),
+            (byte)(MapColor.STONE.id * 4 + 2)
         };
 
         byte[] diamondColors = new byte[] {
-            (byte)(MapColor.DIAMOND.id * 4 + 1),
             (byte)(MapColor.DIAMOND.id * 4 + 2),
+            (byte)(MapColor.DIAMOND.id * 4 + 3),
             (byte)(MapColor.DIAMOND.id * 4 + 3)
         };
 

@@ -29,7 +29,7 @@ public class ModBlocks {
             () -> new Block(BlockBehaviour.Properties.copy(Blocks.OBSIDIAN)));
 
     public static final RegistryObject<Block> DIAMOND8 = registerEdibleBlockItem("diamond8",
-            () -> new Block(BlockBehaviour.Properties.copy(Blocks.DIAMOND_ORE)));
+            () -> new Block(BlockBehaviour.Properties.copy(Blocks.DIAMOND_ORE).requiresCorrectToolForDrops()));
 
     public static final RegistryObject<Block> STONE104 = registerBlock("stone104",
             () -> new Block(BlockBehaviour.Properties.copy(Blocks.STONE)));
