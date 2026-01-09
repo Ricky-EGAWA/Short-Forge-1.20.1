@@ -64,7 +64,7 @@ public class ClientEvents extends RenderStateShard {
                 .getBlockModel(Blocks.STONE.defaultBlockState())
                 .getParticleIcon();
             // 石は明るめに
-            colorR = 200; colorG = 200; colorB = 200;
+            colorR = 240; colorG = 240; colorB = 240;
         }
         // ネザーラックテクスチャの地図かチェック
         else if (stack.getTag().getBoolean("NetherrackTextured")) {
@@ -209,7 +209,7 @@ public class ClientEvents extends RenderStateShard {
                 .getBlockModel(Blocks.DIAMOND_ORE.defaultBlockState())
                 .getParticleIcon();
             // ダイヤモンド鉱石は明るめに
-            colorR = 200; colorG = 200; colorB = 200;
+            colorR = 240; colorG = 240; colorB = 240;
         }
         // ダイヤモンドブロックテクスチャの地図かチェック
         else if (stack.getTag().getBoolean("DiamondBlockTextured")) {
