@@ -63,6 +63,8 @@ public class ClientEvents extends RenderStateShard {
                 .getBlockRenderer()
                 .getBlockModel(Blocks.STONE.defaultBlockState())
                 .getParticleIcon();
+            // 石は明るめに
+            colorR = 200; colorG = 200; colorB = 200;
         }
         // ネザーラックテクスチャの地図かチェック
         else if (stack.getTag().getBoolean("NetherrackTextured")) {
@@ -76,8 +78,8 @@ public class ClientEvents extends RenderStateShard {
             textureSprite = Minecraft.getInstance()
                 .getTextureAtlas(InventoryMenu.BLOCK_ATLAS)
                 .apply(new ResourceLocation("minecraft", "block/grass_block_top"));
-            // 草の緑色のティント
-            colorR = 100; colorG = 148; colorB = 80;
+            // 草の緑色のティント（明るめに）
+            colorR = 130; colorG = 200; colorB = 100;
         }
         // 溶岩テクスチャの地図かチェック（明るくする）
         else if (stack.getTag().getBoolean("LavaTextured")) {
@@ -206,6 +208,8 @@ public class ClientEvents extends RenderStateShard {
                 .getBlockRenderer()
                 .getBlockModel(Blocks.DIAMOND_ORE.defaultBlockState())
                 .getParticleIcon();
+            // ダイヤモンド鉱石は明るめに
+            colorR = 200; colorG = 200; colorB = 200;
         }
         // ダイヤモンドブロックテクスチャの地図かチェック
         else if (stack.getTag().getBoolean("DiamondBlockTextured")) {
